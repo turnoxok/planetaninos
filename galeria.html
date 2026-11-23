@@ -293,7 +293,7 @@ if(emb)document.querySelectorAll('a[href^="./"]:not(.weeb-back)').forEach(functi
     var D=T.demo;if(!D){return}
     var nom=String(T.nombre||D.nombre||'').trim(),h=document.getElementById('t');
     if(nom&&h){[].slice.call(h.querySelectorAll('.nom')).forEach(function(n){n.remove()});nom.split(/\s+/).forEach(function(w,i){var sp=document.createElement('span');sp.className='w';sp.style.setProperty('--i',4+i);sp.innerHTML='<span><em></em></span>';sp.querySelector('em').textContent=w;h.appendChild(document.createTextNode('\n      '));h.appendChild(sp)})}
-    return (window.DEMO_BACKEND?window.DEMO_BACKEND.fetch('./?action=config').then(function(r){return r.json()}):Promise.reject()).then(function(j){
+    return (window.DEMO_BACKEND?window.DEMO_BACKEND.fetch('./?action=config').then(function(r){return r.json()}):T.cliente?fetch('./reservar/config.json').then(function(r){return r.json()}).then(function(cf){return fetch(cf.api+'?action=config')}).then(function(r){return r.json()}):Promise.reject()).then(function(j){
       var rows=((j&&j.data&&j.data.contenido)||[]).filter(function(x){return x.seccion==='galeria'&&x.imagen});
       if(rows.length)FOTOS=rows.map(function(x,i){return{src:/^(https?:|data:)/i.test(x.imagen)?x.imagen:'./'+String(x.imagen).replace(/^\.\//,''),t:x.titulo||'',d:x.texto||'',pos:'50% 50%',big:i===0&&rows.length>2?1:0,wide:0}})
     }).catch(function(){})

@@ -367,7 +367,7 @@
   // Fondo: video de una toma recorriendo la escena 3D (una sola vez; al final queda el último cuadro)
   var VID = document.createElement('video');
   VID.muted = true; VID.defaultMuted = true; VID.playsInline = true; VID.setAttribute('playsinline', ''); VID.setAttribute('webkit-playsinline', ''); VID.preload = 'auto';
-  var DEMO = !!(window.TEMA && TEMA.demoId);   /* en las demos el fondo es una imagen fija y el video no está disponible */
+  var DEMO = !!(window.TEMA && TEMA.demoId && !TEMA.cliente);   /* en las demos el fondo es una imagen fija y el video no está disponible */
   if (!DEMO) VID.src = './assets/inv/fondo.mp4';   /* si el video no carga, se usan las imágenes fondo1-4 */
   VID.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none'; document.body.appendChild(VID);
   function vidOk() { return VID.readyState >= 2 && VID.videoWidth > 0; }

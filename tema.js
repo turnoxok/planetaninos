@@ -83,7 +83,7 @@ if(id){
       c.querySelector('button').onclick=function(){c.remove();var x=document.getElementById('tema-cinta-css');if(x)x.remove();try{sessionStorage.setItem('tuweeb-cinta-x','1')}catch(e){}};};
     T.listo.then(function(){if(document.body)cinta();else document.addEventListener('DOMContentLoaded',cinta)});
   }
-  if(/\/(reservar|panel)\/|\/(planes|galeria)(\.html)?$/.test(location.pathname)){document.write('<script src="'+RAIZ+'demo/backend.js?v=6"><\/script>')}
+  if(!CLIENTE&&/\/(reservar|panel)\/|\/(planes|galeria)(\.html)?$/.test(location.pathname)){document.write('<script src="'+RAIZ+'demo/backend.js?v=6"><\/script>')}
 }
 
 /* ── colores ── */
