@@ -122,7 +122,7 @@ T.silBox=function(){try{var sp=T.logo3dRaw.split(','),sx=/;base64/i.test(sp[0])?
   if(x1<=x0||y1<=y0)return null;return{W:nn[2],H:nn[3],cx:(x0+x1)/2,cy:(y0+y1)/2,bw:x1-x0,bh:y1-y0}}catch(e){return null}};
 /* datos de contacto del sitio: en una demo, los de la demo (o genéricos si todavía no los cargó); nunca los de Planeta Niños */
 /* datos reales del salón (panel → Ajustes): vienen del Apps Script, quedan guardados en el celular y se refrescan solos */
-var SAL0={nombre:'Planeta Niños',whatsapp:'5493436222263',direccion:'Av. Los Cisnes 2351, Oro Verde, Entre Ríos',mapsUrl:''},SALK='pn-salon-v1';
+var SAL0={nombre:'Planeta Niños',whatsapp:'5493436225897',direccion:'Av. Los Cisnes 2351, Oro Verde, Entre Ríos',mapsUrl:''},SALK='pn-salon-v1';
 function salonCrudo(){var o=Object.assign({},SAL0),g=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};[g('planes-cfg-v3'),g(SALK)].forEach(function(c){if(c)['nombre','whatsapp','direccion','mapsUrl'].forEach(function(k){if(c[k]!=null&&String(c[k]).trim()!=='')o[k]=String(c[k]).trim()})});return o}
 T.salonDatos=function(){var c=salonCrudo(),wa=String(c.whatsapp).replace(/\D/g,''),dir=c.direccion,q=encodeURIComponent(dir||c.nombre);
   var mp=/^https?:\/\//i.test(c.mapsUrl)?c.mapsUrl:'https://www.google.com/maps/search/?api=1&query='+q;
@@ -190,7 +190,7 @@ function aplicar(){
 var NOM=/Planeta Ni[ñn]os/gi;
 /* en una demo, lo que quedó escrito del lugar original (dirección, teléfono, ciudad) se reemplaza por lo de la demo o por algo genérico */
 function dato(v){if(CLIENTE)return v;var D=T.datosDemo&&T.datosDemo();if(!D||!v)return v;
-  return v.replace(/Av\.? Los Cisnes 2351,? Oro Verde(, Entre R[ií]os)?/gi,D.dir||'Tu dirección, tu ciudad').replace(/343 ?622 ?22 ?63|\+?5493436222263/g,D.tel||'').replace(/\s*(en|,)\s*Oro Verde(, Entre R[ií]os)?/gi,'')}
+  return v.replace(/Av\.? Los Cisnes 2351,? Oro Verde(, Entre R[ií]os)?/gi,D.dir||'Tu dirección, tu ciudad').replace(/343 ?622 ?58 ?97|\+?5493436225897/g,D.tel||'').replace(/\s*(en|,)\s*Oro Verde(, Entre R[ií]os)?/gi,'')}
 function logos(){
   if(!T.logo)return;
   var st=document.createElement('style');st.textContent='.tw3d{content:url("'+T.logo.replace(/"/g,'%22')+'")!important}';document.head.appendChild(st);
@@ -199,7 +199,7 @@ function logos(){
 }
 function nombres(raiz){
   if(!T.nombre)return;var w=document.createTreeWalker(raiz,NodeFilter.SHOW_TEXT,null),n,lista=[];
-  while(n=w.nextNode()){var p=n.parentNode&&n.parentNode.nodeName;if(p==='SCRIPT'||p==='STYLE')continue;NOM.lastIndex=0;if(NOM.test(n.nodeValue)||(T.demo&&/Oro Verde|Los Cisnes|622 ?22 ?63|3436222263/i.test(n.nodeValue)))lista.push(n)}
+  while(n=w.nextNode()){var p=n.parentNode&&n.parentNode.nodeName;if(p==='SCRIPT'||p==='STYLE')continue;NOM.lastIndex=0;if(NOM.test(n.nodeValue)||(T.demo&&/Oro Verde|Los Cisnes|622 ?58 ?97|3436225897/i.test(n.nodeValue)))lista.push(n)}
   lista.forEach(function(x){x.nodeValue=dato(x.nodeValue.replace(NOM,T.nombre))});
   raiz.querySelectorAll&&raiz.querySelectorAll('[alt],[aria-label],[content]').forEach(function(e){['alt','aria-label','content'].forEach(function(a){var v=e.getAttribute(a);if(v&&/Planeta Ni[ñn]os/i.test(v))e.setAttribute(a,v.replace(NOM,T.nombre))})});
 }
