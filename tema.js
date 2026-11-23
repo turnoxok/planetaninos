@@ -121,7 +121,15 @@ T.silBox=function(){try{var sp=T.logo3dRaw.split(','),sx=/;base64/i.test(sp[0])?
   while((m=re.exec(sx))){var tk=m[1].match(/[MLQZ]|-?[\d.]+/g)||[],i=0,cmd='';while(i<tk.length){if(/[MLQZ]/.test(tk[i])){cmd=tk[i++];continue}var n=cmd==='Q'?4:2,a=tk.slice(i,i+n).map(Number),px=a[n-2],py=a[n-1];if(px<x0)x0=px;if(px>x1)x1=px;if(py<y0)y0=py;if(py>y1)y1=py;i+=n}}
   if(x1<=x0||y1<=y0)return null;return{W:nn[2],H:nn[3],cx:(x0+x1)/2,cy:(y0+y1)/2,bw:x1-x0,bh:y1-y0}}catch(e){return null}};
 /* datos de contacto del sitio: en una demo, los de la demo (o genéricos si todavía no los cargó); nunca los de Planeta Niños */
-T.datosDemo=function(){var d=T.demo;if(!d)return null;if(T._dd)return T._dd;var x=d.datos||{},c={};
+/* datos reales del salón (panel → Ajustes): vienen del Apps Script, quedan guardados en el celular y se refrescan solos */
+var SAL0={nombre:'Planeta Niños',whatsapp:'5493436222263',direccion:'Av. Los Cisnes 2351, Oro Verde, Entre Ríos',mapsUrl:''},SALK='pn-salon-v1';
+function salonCrudo(){var o=Object.assign({},SAL0),g=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};[g('planes-cfg-v3'),g(SALK)].forEach(function(c){if(c)['nombre','whatsapp','direccion','mapsUrl'].forEach(function(k){if(c[k]!=null&&String(c[k]).trim()!=='')o[k]=String(c[k]).trim()})});return o}
+T.salonDatos=function(){var c=salonCrudo(),wa=String(c.whatsapp).replace(/\D/g,''),dir=c.direccion,q=encodeURIComponent(dir||c.nombre);
+  var mp=/^https?:\/\//i.test(c.mapsUrl)?c.mapsUrl:'https://www.google.com/maps/search/?api=1&query='+q;
+  return{nombre:c.nombre,wa:wa,tel:wa?'+'+wa.replace(/^54(9)?(\d{3})(\d{3})(\d{4})$/,function(m,n,a,b,d){return'54 9 '+a+' '+b+'-'+d}):'',dir:dir,maps:mp,embed:'https://www.google.com/maps?q='+q+'&z=16&output=embed'}};
+if(CLIENTE&&!/\/panel\//.test(location.pathname)){(function(){var go=function(){fetch(RAIZ+'reservar/config.json').then(function(r){return r.json()}).then(function(c){return fetch(c.api+'?action=config')}).then(function(r){return r.json()}).then(function(j){var d=j&&j.ok&&j.data;if(!d)return;var a=JSON.stringify(salonCrudo());localStorage.setItem(SALK,JSON.stringify({nombre:d.nombre,whatsapp:d.whatsapp,direccion:d.direccion,mapsUrl:d.mapsUrl}));if(JSON.stringify(salonCrudo())!==a)document.dispatchEvent(new Event('salon'))}).catch(function(){})};addEventListener('load',function(){(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000})})})();
+  var sc=document.createElement('script');sc.src=RAIZ+'salon-ui.js?v=1';sc.defer=true;document.head.appendChild(sc)}
+T.datosDemo=function(){if(CLIENTE){if(!T._dc||T._dcs!==JSON.stringify(salonCrudo())){T._dcs=JSON.stringify(salonCrudo());var s=T.salonDatos();T._dc={nombre:s.nombre,dir:s.dir,generica:false,wa:s.wa,tel:s.tel,maps:s.maps}}return T._dc}var d=T.demo;if(!d)return null;if(T._dd)return T._dd;var x=d.datos||{},c={};
   /* lo que se carga en el panel (Ajustes) de esta demo manda sobre lo del alta */
   try{var st=JSON.parse(localStorage.getItem('tuweeb-demo-v1:'+d.id)||'null'),f=st&&st.e&&st.e.hojas&&st.e.hojas.Config||[];f.forEach(function(r){if(r&&r[0])c[r[0]]=r[1]})}catch(e){}
   var wa=String(c.whatsapp||d.whatsapp||x.whatsapp||'').replace(/\D/g,''),dir=String(c.direccion||x.direccion||'').trim(),mp=String(c.mapsUrl||x.mapsUrl||'').trim();if(/^Tu direcci[oó]n/i.test(dir))dir='';
@@ -132,12 +140,12 @@ T.avisoSinConfig=function(tipo){var t=document.getElementById('tw-aviso');if(t)t
   t.innerHTML='<b style="display:block;font-size:15px;margin-bottom:4px">Este botón todavía no está configurado</b><span style="opacity:.85;font-weight:500">'+(vd?'La animación y el video se activan con tu web. Activala desde tu panel.':(ws?'Agregá el WhatsApp del salón':'Agregá la dirección y el link de “Cómo llegar”')+' desde tu panel: Ajustes.')+'</span><div style="display:flex;gap:8px;margin-top:12px"><a href="'+pn+'" style="flex:1;text-align:center;padding:10px;border-radius:12px;background:#e8693a;color:#fff;text-decoration:none">'+(vd?'Activar mi web':'Ir al panel')+'</a><button type="button" style="flex:1;padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:none;color:#fff;font:inherit;cursor:pointer">Cerrar</button></div>';
   t.querySelector('button').onclick=function(){t.remove()};document.body.appendChild(t);setTimeout(function(){if(t.parentNode)t.remove()},9000)};
 /* en una demo ningún botón de WhatsApp funciona, aunque tenga número: se muestra el aviso */
-document.addEventListener('click',function(e){if(!T.demoId||/\/panel\//.test(location.pathname))return;var a=e.target.closest&&e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp.com"],a[href*="web.whatsapp.com"]');if(!a||a.closest('#tw-aviso'))return;e.preventDefault();e.stopImmediatePropagation();T.avisoSinConfig('#sin-config-wa')},true);
+document.addEventListener('click',function(e){if(CLIENTE||!T.demoId||/\/panel\//.test(location.pathname))return;var a=e.target.closest&&e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp.com"],a[href*="web.whatsapp.com"]');if(!a||a.closest('#tw-aviso'))return;e.preventDefault();e.stopImmediatePropagation();T.avisoSinConfig('#sin-config-wa')},true);
 document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#sin-config"]');if(!a)return;e.preventDefault();e.stopImmediatePropagation();T.avisoSinConfig(a.getAttribute('href'))},true);
 T.aplicarDatos=function(P){var D=T.datosDemo();if(!D||!P)return;
-  var nom=D.nombre,wlink='';/* demo: el botón de WhatsApp nunca funciona */
+  var nom=D.nombre,wlink=CLIENTE&&D.wa?'https://wa.me/'+D.wa+'?text='+encodeURIComponent('¡Hola! Quiero consultar por un festejo en '+nom+'.'):'';/* demo: el botón de WhatsApp nunca funciona */
   (P.sections||[]).forEach(function(s){if(s&&s.type==='footer'){
-    s.address=D.dir||'Tu dirección, tu ciudad';s.phone=D.tel;s.whatsapp=D.wa;s.text='Salón de fiestas y eventos. ¡Tu fiesta, a tu manera!';
+    s.address=D.dir||'Tu dirección, tu ciudad';s.phone=D.tel;s.whatsapp=D.wa;if(!CLIENTE)s.text='Salón de fiestas y eventos. ¡Tu fiesta, a tu manera!';
     s.col1Links=String(s.col1Links||'').split('\n').map(function(l){return /wa\.me/.test(l)?'Contacto | '+(wlink||'#sin-config-wa'):l}).filter(Boolean).join('\n')}});
   if(P.menu&&P.menu.items)P.menu.items.forEach(function(it){if(!it)return;if(/maps/.test(it.href||'')){if(D.maps)it.href=D.maps;else{it.href='#sin-config-mapa';it.newTab=false;it.ask='Todavía no está configurado. ¿Ver cómo agregarlo?'}}else if(/wa\.me/.test(it.href||'')){if(wlink)it.href=wlink;else{it.href='#sin-config-wa';it.newTab=false;it.ask='Todavía no está configurado. ¿Ver cómo agregarlo?'}}});
   if(P.fab){P.fab.phone=D.wa;P.fab.address=D.dir;P.fab.mapUrl=D.maps;P.fab.waText='¡Hola! Quiero consultar por una reserva en '+nom+'.';if(!D.wa)P.fab.wa=false;if(!D.maps)P.fab.map=false}};
@@ -181,7 +189,7 @@ function aplicar(){
 }
 var NOM=/Planeta Ni[ñn]os/gi;
 /* en una demo, lo que quedó escrito del lugar original (dirección, teléfono, ciudad) se reemplaza por lo de la demo o por algo genérico */
-function dato(v){var D=T.datosDemo&&T.datosDemo();if(!D||!v)return v;
+function dato(v){if(CLIENTE)return v;var D=T.datosDemo&&T.datosDemo();if(!D||!v)return v;
   return v.replace(/Av\.? Los Cisnes 2351,? Oro Verde(, Entre R[ií]os)?/gi,D.dir||'Tu dirección, tu ciudad').replace(/343 ?622 ?22 ?63|\+?5493436222263/g,D.tel||'').replace(/\s*(en|,)\s*Oro Verde(, Entre R[ií]os)?/gi,'')}
 function logos(){
   if(!T.logo)return;
@@ -196,7 +204,7 @@ function nombres(raiz){
   raiz.querySelectorAll&&raiz.querySelectorAll('[alt],[aria-label],[content]').forEach(function(e){['alt','aria-label','content'].forEach(function(a){var v=e.getAttribute(a);if(v&&/Planeta Ni[ñn]os/i.test(v))e.setAttribute(a,v.replace(NOM,T.nombre))})});
 }
 function textos(){
-  if(!T.nombre)return;nombres(document.body);if(/Planeta Ni[ñn]os|Oro Verde/i.test(document.title))document.title=dato(document.title.replace(NOM,T.nombre));if(T.demo){var rb=document.querySelector('meta[name=robots]')||document.head.appendChild(Object.assign(document.createElement('meta'),{name:'robots'}));rb.content='noindex,nofollow'}
+  if(!T.nombre)return;nombres(document.body);if(/Planeta Ni[ñn]os|Oro Verde/i.test(document.title))document.title=dato(document.title.replace(NOM,T.nombre));if(T.demo&&!CLIENTE){var rb=document.querySelector('meta[name=robots]')||document.head.appendChild(Object.assign(document.createElement('meta'),{name:'robots'}));rb.content='noindex,nofollow'}
   var pend=0;new MutationObserver(function(){if(pend)return;pend=setTimeout(function(){pend=0;nombres(document.body)},120)}).observe(document.body,{childList:true,subtree:true,characterData:true});
 }
 /* dentro de una demo, los enlaces del sitio llevan el código: así "Volver al sitio" y los botones no pierden la marca */
