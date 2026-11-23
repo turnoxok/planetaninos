@@ -346,7 +346,7 @@ function armar(c){
   show('pasosSec',B.pasos);$('pasos').innerHTML=(B.pasos||[]).map(function(x){return '<div class="st"><h4>'+esc(x.titulo)+'</h4>'+(x.texto?'<p>'+esc(x.texto)+'</p>':'')+'</div>'}).join('');
   show('faqSec',B.faq);$('faq').innerHTML=(B.faq||[]).map(function(x){return '<details><summary>'+esc(x.titulo)+'</summary><p>'+esc(x.texto)+'</p></details>'}).join('');
   /* planes, horarios y precios */
-  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1});
+  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1}),conFer=turnos.some(function(t){return /feriado/i.test(t.etiqueta||'')});turnos=turnos.filter(function(t){return !/feriado/i.test(t.etiqueta||'')});
   if(!planes.length){$('planes').innerHTML='<p class="cargando">Los planes se publican muy pronto. <a href="./reservar/">Ver disponibilidad</a></p>';$('upgrade').innerHTML='';$('promoSec').hidden=true;return}
   var pr=function(p,t){return p.precios&&p.precios[t.id]!=null?Number(p.precios[t.id]):p.precio};
   var promo=function(t){return /promo/i.test(t.etiqueta||'')};
@@ -371,7 +371,7 @@ function armar(c){
     var gs=grupos.every(function(g){return pr(p,g.ref)===minP})&&grupos.length>1?[{dias:'',et:'Todos los días',promo:false,todos:true,turnos:grupos.reduce(function(a,g){return a.concat(g.turnos)},[]),ref:grupos[0].ref}]:grupos,mu=multi&&gs.length>1;
     var bands=gs.map(function(g){var v=pr(p,g.ref);
       var tg=mu&&v===minP?'<span class="tag">Mejor precio</span>':'';
-      var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)));
+      var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)+(conFer?' y feriados':'')));
       return '<div class="band">'+tg+'<h4>'+tit+'</h4>'+horas(g.turnos)+'<div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
     var top=kind==='k-base'&&!planes.slice(0,i).some(function(q){return rk(q)===1})&&planes.length>=2;
     var head,body='';
