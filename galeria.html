@@ -2,7 +2,7 @@
 <html lang="es-AR">
 <head>
 <meta charset="UTF-8" />
-<script src="./tema.js?v=41"></script>
+<script src="./tema.js?v=42"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Galería de fotos — Planeta Niños, Oro Verde</title>
 <meta name="description" content="Fotos del salón de fiestas infantiles Planeta Niños en Oro Verde, Entre Ríos: juegos, pelotero, decoración y festejos." />
@@ -30,8 +30,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="preload" as="image" href="./assets/galeria/galeria-01.webp" />
 <style>
-  @font-face{font-family:'Baloo 2';font-weight:700;font-display:swap;src:url(./assets/inv/baloo2-700.woff2) format('woff2')}
-  @font-face{font-family:'Baloo 2';font-weight:800;font-display:swap;src:url(./assets/inv/baloo2-800.woff2) format('woff2')}
   :root{--bg:var(--t-406c38,#406c38);--bg2:var(--t-2f5429,#2f5429);--fg:#fafff9;--ac:var(--t-b1c74d,#b1c74d);--ink:var(--t-1e3a19,#1e3a19);--ease:cubic-bezier(.2,.8,.2,1);--sw:84vw;--sh:min(64svh,560px)}
   *{box-sizing:border-box;margin:0;padding:0}
   html{background:var(--bg2)}
@@ -55,7 +53,7 @@
   /* ---------- portada ---------- */
   .hero{max-width:1240px;margin:0 auto;padding:clamp(28px,6vh,64px) clamp(18px,5vw,56px) clamp(26px,5vh,48px);min-height:min(70svh,640px);display:flex;flex-direction:column;justify-content:center}
   .eyebrow{align-self:flex-start;background:rgba(var(--t-b1c74d-rgb,177,199,77),.18);color:var(--t-dcea9a,#dcea9a);font-size:.78rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;padding:7px 14px;border-radius:999px;margin-bottom:20px}
-  h1{font-family:'Baloo 2','Montserrat',system-ui,sans-serif;font-weight:800;font-size:clamp(2.6rem,9.2vw,6.4rem);line-height:.98;letter-spacing:-.015em;max-width:12em}
+  h1{font-family:'Montserrat',system-ui,sans-serif;font-weight:800;font-size:clamp(2.6rem,9.2vw,6.4rem);line-height:.98;letter-spacing:-.015em;max-width:12em}
   h1 .w{display:inline-block;overflow:hidden;vertical-align:top;padding:.04em .06em .12em;margin:-.04em -.06em -.12em}
   h1 .w>span{display:inline-block}
   h1 em{font-style:normal;color:var(--ac)}
@@ -87,7 +85,7 @@
   .sl.on .zoom{opacity:1;transform:none}
   .zoom svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
   .cap{text-align:left;position:absolute;left:clamp(16px,2.4vw,30px);right:16px;bottom:clamp(14px,2.2vw,26px);z-index:2;pointer-events:none}
-  .cap b{display:block;font:800 clamp(1.3rem,3.4vw,2.2rem)/1.05 'Baloo 2','Montserrat',sans-serif;overflow:hidden}
+  .cap b{display:block;font:800 clamp(1.3rem,3.4vw,2.2rem)/1.05 'Montserrat',sans-serif;overflow:hidden}
   .cap b span{display:block;transform:translateY(105%);transition:transform .7s var(--ease)}
   .cap small{display:block;margin-top:6px;font-weight:500;font-size:clamp(.85rem,1.6vw,1rem);opacity:0;transform:translateY(12px);transition:opacity .6s var(--ease) .12s,transform .6s var(--ease) .12s}
   .sl.on .cap b span{transform:none}.sl.on .cap small{opacity:.92;transform:none}
@@ -99,7 +97,7 @@
     @keyframes wPar{from{transform:translate3d(8%,0,0)}to{transform:translate3d(-8%,0,0)}}
   }
   .ui{max-width:1240px;margin:0 auto;padding:0 clamp(18px,5vw,56px);display:flex;align-items:center;gap:18px}
-  .count{font:800 1.6rem 'Baloo 2',sans-serif;letter-spacing:.02em;min-width:5.2em;display:flex;align-items:baseline;gap:6px}
+  .count{font:800 1.6rem 'Montserrat',sans-serif;letter-spacing:.02em;min-width:5.2em;display:flex;align-items:baseline;gap:6px}
   .count .n{display:inline-block;height:1.2em;overflow:hidden;line-height:1.2}
   .count .n span{display:block;transition:transform .5s var(--ease)}
   .count small{font:600 .9rem 'Montserrat',sans-serif;opacity:.7}
@@ -114,7 +112,7 @@
 
   /* ---------- todas las fotos ---------- */
   .all{max-width:1240px;margin:0 auto;padding:clamp(50px,9vh,110px) clamp(18px,5vw,56px) 10px}
-  .all h2{font:800 clamp(1.8rem,5vw,3.2rem)/1.05 'Baloo 2','Montserrat',sans-serif;margin-bottom:22px}
+  .all h2{font:800 clamp(1.8rem,5vw,3.2rem)/1.05 'Montserrat',sans-serif;margin-bottom:22px}
   .mos{min-height:120px;display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(10px,1.6vw,18px);grid-auto-flow:dense}
   .mos button{position:relative;border-radius:clamp(16px,2vw,26px);overflow:hidden;aspect-ratio:4/3;background:rgba(255,255,255,.1);clip-path:inset(0 0 0 0 round 22px)}
   .mos button.big,.mos button.wide{grid-column:span 2;aspect-ratio:16/9}
@@ -140,7 +138,7 @@
   .lb img{max-width:100%;max-height:100%;object-fit:contain;border-radius:14px;transform:scale(.92);opacity:0;transition:transform .45s var(--ease),opacity .35s;box-shadow:0 30px 80px rgba(0,0,0,.5);-webkit-user-drag:none;user-select:none}
   .lb.on img{transform:none;opacity:1}
   .lb .t{padding:6px 20px calc(20px + env(safe-area-inset-bottom));text-align:center;min-height:74px}
-  .lb .t b{display:block;font:800 1.25rem 'Baloo 2',sans-serif}.lb .t small{opacity:.8}
+  .lb .t b{display:block;font:800 1.25rem 'Montserrat',sans-serif}.lb .t small{opacity:.8}
   .lb .x,.lb .p,.lb .n{position:absolute;width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.15);display:grid;place-items:center;z-index:2;transition:background .2s}
   .lb .x:hover,.lb .p:hover,.lb .n:hover{background:var(--ac)}.lb .x:hover svg,.lb .p:hover svg,.lb .n:hover svg{stroke:var(--ink)}
   .lb .x{right:14px;top:calc(12px + env(safe-area-inset-top))}

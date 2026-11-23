@@ -2,14 +2,12 @@
 <html lang="es-AR">
 <head>
 <meta charset="UTF-8" />
-<script src="./tema.js?v=41"></script>
+<script src="./tema.js?v=42"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
-  @font-face{font-family:'Baloo 2';font-weight:700;src:url(./assets/inv/baloo2-700.woff2) format('woff2')}
-  @font-face{font-family:'Baloo 2';font-weight:800;src:url(./assets/inv/baloo2-800.woff2) format('woff2')}
   :root{--bg:var(--t-406c38,#406c38);--fg:#fafff9;--ac:var(--t-b1c74d,#b1c74d);--cy:var(--t-b1c74d,#b1c74d);--li:var(--t-83b27c,#83b27c);--off:#ebebef;--u:.3px}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{touch-action:pan-y;background:var(--bg);color:var(--fg);font-family:'Montserrat',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
@@ -52,7 +50,7 @@
   .hs{touch-action:pan-y;position:absolute;border:2px dashed rgba(255,255,255,.55);border-radius:16px;background:transparent;z-index:3;cursor:pointer;animation:hsp 1.6s ease-in-out 3}
   .hs:hover,.hs:focus-within{border-color:var(--cy);background:rgba(var(--t-b1c74d-rgb,177,199,77),.10);animation:none}
   @keyframes hsp{50%{border-color:rgba(var(--t-b1c74d-rgb,177,199,77),1);background:rgba(var(--t-b1c74d-rgb,177,199,77),.14)}}
-  .hs input{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;outline:0;font-family:'Baloo 2',system-ui,sans-serif;font-weight:800;text-align:center;color:transparent;caret-color:#fff;cursor:pointer}
+  .hs input{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:0;outline:0;font-family:'Montserrat',system-ui,sans-serif;font-weight:800;text-align:center;color:transparent;caret-color:#fff;cursor:pointer}
   .hs input[type=file],.hs input[type=date],.hs input[type=time]{opacity:0;font-size:16px}
   .hs-foto{left:28.809%;top:26.870%;width:40.039%;height:22.522%;border-radius:50%}
   .hs-nombre{left:28.125%;top:48.733%;width:43.750%;height:7.965%}
@@ -137,7 +135,7 @@
 <script>
 (function () {
   var W = 1080, H = 1920, TOUR = 7.6, DUR = 13;
-  var F = '"Baloo 2","Fredoka","Arial Rounded MT Bold",system-ui,sans-serif';
+  var F = '"Montserrat",system-ui,sans-serif';
   /* colores de marca: todo color fijo que se pinta en el cartel pasa por la paleta de la demo (sin demo no cambia nada) */
   (function () {
     var P = CanvasRenderingContext2D.prototype, cache = {}, ck = '';
@@ -507,9 +505,9 @@
     c.save();
     c.shadowColor = 'rgba(18,56,12,.55)'; c.shadowBlur = FAST ? 0 : 40; c.shadowOffsetY = FAST ? 14 : 22;
     c.beginPath(); c.arc(cx, cy, ro, 0, 7);
-    var rg = c.createLinearGradient(cx - ro, cy - ro, cx + ro, cy + ro); rg.addColorStop(0, '#7fe8f7'); rg.addColorStop(1, '#22a9cf');
+    var rg = c.createLinearGradient(cx - ro, cy - ro, cx + ro, cy + ro); rg.addColorStop(0, '#4f8a43'); rg.addColorStop(1, '#2c4f26');
     c.fillStyle = rg; c.fill(); c.shadowColor = 'transparent';
-    plate(c, cx + ro - L(8), cy - L(38) * rr, L(34) * rr + 2, L(76) * rr, L(14), '#7fe8f7', '#22a9cf', '#c8f5fc');
+    plate(c, cx + ro - L(8), cy - L(38) * rr, L(34) * rr + 2, L(76) * rr, L(14), '#4f8a43', '#2c4f26', '#6fa062');
     c.beginPath(); c.arc(cx, cy, ro, 0, 7); c.lineWidth = 4; c.strokeStyle = 'rgba(255,255,255,.55)'; c.stroke();
     c.beginPath(); c.arc(cx, cy, r + L(10), 0, 7); c.fillStyle = 'rgba(37,103,27,.6)'; c.fill();
     c.beginPath(); c.arc(cx, cy, r, 0, 7); c.clip();
@@ -524,7 +522,7 @@
       plate(c, -L(320), -L(59), L(640), L(118), L(52), '#68c859', '#409232', '#5bd0e7', 0);
       c.font = '800 80px ' + F; fit(c, '¡ESTÁS INVITADO!', L(563), 80, 800);
       var w1 = c.measureText('¡ESTÁS ').width, w2 = c.measureText('INVITADO!').width, x0 = -(w1 + w2) / 2, fs1 = parseInt(c.font.match(/(\d+)px/)[1], 10);
-      c.textAlign = 'left'; stext(c, '¡ESTÁS ', x0, fs1 * .3, '#fafff9'); stext(c, 'INVITADO!', x0 + w1, fs1 * .3, '#5bd0e7'); c.textAlign = 'center';
+      c.textAlign = 'left'; stext(c, '¡ESTÁS ', x0, fs1 * .3, '#fafff9'); stext(c, 'INVITADO!', x0 + w1, fs1 * .3, '#fafff9'); c.textAlign = 'center';
     });
     c.restore();
 
@@ -539,11 +537,11 @@
     c.restore();
 
     if (S.edad) {
-      // CUMPLE: pastilla turquesa curva
+      // CUMPLE: pastilla verde oscura curva
       var a4 = outCubic(prog(t, 1.5, 2.1));
       c.save(); c.globalAlpha = a4; c.translate(0, (1 - a4) * 50);
       warp(c, CX - L(137), Y(955), L(274), L(62), 12, function (c) {
-        plate(c, CX - L(137), Y(955), L(274), L(62), L(31), '#47cfe8', '#1fa3c8', '#bff3fb', 0);
+        plate(c, CX - L(137), Y(955), L(274), L(62), L(31), '#4f8a43', '#2c4f26', '#6fa062', 0);
         c.textAlign = 'center'; c.font = '800 46px ' + F; if (c.letterSpacing !== undefined) c.letterSpacing = '7px';
         stext(c, 'CUMPLE', CX + 4, Y(955) + L(31) + 16, '#fff', false); if (c.letterSpacing !== undefined) c.letterSpacing = '0px';
       });
@@ -870,7 +868,7 @@
   }
   window.addEventListener('resize', resize); window.addEventListener('load', function () { resize(); setTimeout(resize, 600); });
   if (window.ResizeObserver) new ResizeObserver(units).observe($('box'));
-  if (document.fonts && document.fonts.load) { Promise.all([document.fonts.load('800 40px "Baloo 2"'), document.fonts.load('700 40px "Baloo 2"')]).then(rerender, rerender); }
+  if (document.fonts && document.fonts.load) { Promise.all([document.fonts.load('800 40px "Montserrat"'), document.fonts.load('700 40px "Montserrat"')]).then(rerender, rerender); }
   units(); rerender();
   /* cuando llega la marca de la demo: datos del lugar, logo y colores nuevos, y se vuelve a dibujar */
   if (window.TEMA && TEMA.listo) TEMA.listo.then(function () {
