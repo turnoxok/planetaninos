@@ -259,7 +259,7 @@ function armar(c){
     var bands=gs.map(function(g){var v=pr(p,g.ref);
       var tag=mu&&v===minP?'<span class="tag">⭐ Mejor precio</span>':'';
       var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)));
-      var hrs=g.turnos.map(function(t){return hh(t.inicio)+' a '+hh(t.fin)}).join(' · ')+' hs';
+      var hrs=g.turnos.map(function(t){return hh(t.inicio)+' a '+hh(t.fin)}).filter(function(x,k,a){return a.indexOf(x)===k}).join(' · ')+' hs';
       return '<div class="band">'+tag+'<h4>'+tit+'</h4><div class="hrs">'+esc(hrs)+'</div><div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
     var topI=/complet/i.test(c.pgDestacado||'')?planes.reduce(function(b,q,k){return Number(q.precio)>Number(planes[b].precio)?k:b},0):Math.floor(planes.length/2),top=i===topI&&planes.length>=3;
     return '<article class="plan'+(top?' top':'')+'">'+(top&&c.pgDestacado?'<span class="badge">'+esc(c.pgDestacado)+'</span>':'')+'<h2>'+esc(p.nombre)+'</h2>'+(chips?'<div class="meta">'+chips+'</div>':'')+(resto?'<p class="for">'+esc(resto)+'</p>':'')+'<div class="bands">'+bands+'</div><p class="sena">'+cuota(p)+'</p><a class="go" href="./reservar/">'+esc(c.pgBotonPlan||'Reservar este combo')+'</a></article>'}).join('');
