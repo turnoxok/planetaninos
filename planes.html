@@ -199,6 +199,23 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   /* lista de la bajada con íconos */
   .lead{margin-bottom:22px}
   .lead .l1{display:block}
+  /* opiniones de Google Maps */
+  .ops{display:grid;gap:18px;padding:22px;border-radius:26px;background:#fff;color:#241b3a;box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
+  .ops .rt{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center}
+  .ops .bars{display:grid;gap:7px}.ops .bars div{display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:center;font-weight:600;font-size:.8rem;color:#6b6480}
+  .ops .bars i{display:block;height:9px;border-radius:9px;background:#ece9f3;position:relative;overflow:hidden}
+  .ops .bars i:after{content:"";position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:9px;background:#fbbc04;transform-origin:left;transform:scaleX(0);transition:transform 1s cubic-bezier(.2,.8,.2,1)}
+  .ops.in .bars i:after{transform:none}
+  .ops .rg{text-align:center;border-left:1.5px solid #e6e2ee;padding-left:18px}
+  .ops .rg b{display:block;font-weight:800;font-size:clamp(2.6rem,12vw,3.6rem);line-height:1}
+  .ops .rg .rs{display:flex;justify-content:center;gap:2px;margin:6px 0 4px}.ops .rg .rs svg{width:18px;height:18px}
+  .ops .rg span{font-weight:600;font-size:.8rem;color:#6b6480}
+  .ops p{margin:0;font-weight:400;line-height:1.55;font-size:.98rem}
+  .ops .ft{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+  .ops .ft small{font-weight:600;color:#6b6480;font-size:.78rem}
+  .ops .ft a{display:inline-block;padding:11px 20px;border-radius:999px;background:var(--c1,#5db046);color:#10240a;font-weight:800;font-size:.86rem;text-decoration:none}
+  @media(max-width:420px){.ops{padding:18px}.ops .rt{gap:12px}.ops .rg{padding-left:12px}}
+  @media(prefers-reduced-motion:reduce){.ops .bars i:after{transition:none;transform:none}}
   .pts{list-style:none;display:grid;gap:10px;margin:16px 0 0;padding:0;max-width:30em}
   .pts li{display:flex;align-items:center;gap:13px;padding:10px 16px 10px 12px;border-radius:18px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);font-weight:800;line-height:1.3;animation:li .5s both;animation-delay:calc(.15s + var(--k,0)*.12s)}
   .pts svg{flex:none;width:34px;height:34px}
@@ -281,6 +298,17 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
     <h2 id="pgIncluyeTitulo"></h2>
     <p class="sub" id="pgIncluyeSub"></p>
     <div class="stack" id="detalle"></div>
+  </section>
+
+  <section class="blk" id="opinionesSec" aria-labelledby="opTit">
+    <h2 id="opTit">Lo que dicen las familias</h2>
+    <p class="sub">Opiniones reales de quienes ya festejaron en Planeta Niños.</p>
+    <div class="ops" id="ops">
+      <div class="rt"><div class="bars" aria-hidden="true"><div>5<i style="--w:100%"></i></div><div>4<i style="--w:7%"></i></div><div>3<i style="--w:2.5%"></i></div><div>2<i style="--w:1.5%"></i></div><div>1<i style="--w:2%"></i></div></div>
+      <div class="rg"><b>4,9</b><div class="rs" role="img" aria-label="4,9 de 5 estrellas"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbc04" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbc04" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbc04" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbc04" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z"/></svg><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fbbc04" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z"/></svg></div><span>129 opiniones</span></div></div>
+      <p>Destacan los amplios espacios interiores y exteriores, con muchos juegos y actividades para todas las edades, incluidos los juegos acuáticos. Cuentan que las instalaciones están impecables y que el personal es atento, muy servicial y ayuda incluso con los preparativos de la fiesta.</p>
+      <div class="ft"><small>Calificación en Google Maps</small><a id="opLink" data-pn-fuera="1" href="https://www.google.com/maps" target="_blank" rel="noopener">Ver opiniones en Google Maps</a></div>
+    </div>
   </section>
 
   <section class="extras" id="adicionalesSec" aria-labelledby="pgAdicionalesTitulo" hidden>
@@ -440,5 +468,7 @@ P.vivo.then(function(d){try{localStorage.setItem(P.clave(),JSON.stringify(d))}ca
   $('reint').onclick=function(){$('planes').innerHTML='<p class="cargando">Cargando…</p>';P.reintentar().then(function(d){try{localStorage.setItem(P.clave(),JSON.stringify(d))}catch(e){}pintar(d)}).catch(function(){$('planes').innerHTML='<p class="cargando">Sigue sin cargar. Revisá tu conexión y probá de nuevo en un rato.</p>'})};});
 })();
 </script>
+<script>(function(){var o=document.getElementById('ops');if(!o)return;try{var d=TEMA.salonDatos();document.getElementById('opLink').href=d.maps}catch(e){}
+if('IntersectionObserver' in window){new IntersectionObserver(function(es,ob){es.forEach(function(e){if(e.isIntersecting){o.classList.add('in');ob.disconnect()}})},{threshold:.3}).observe(o)}else o.classList.add('in')})();</script>
 </body>
 </html>
