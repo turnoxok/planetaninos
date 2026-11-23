@@ -352,7 +352,7 @@ function armar(c){
   var promo=function(t){return /promo/i.test(t.etiqueta||'')};
   var MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],mes=function(f){return MES[Number(String(f).slice(5,7))-1]||''},cap=function(x){return x.charAt(0).toUpperCase()+x.slice(1)};
   var per=function(t){var d=t.desde,h=t.hasta;if(d&&h)return mes(d)===mes(h)?cap(mes(d)):cap(mes(d))+' a '+mes(h);if(h)return 'Hasta '+mes(h);if(d)return 'Desde '+mes(d);return ''};
-  var horas=function(ts){var o=[],m={};ts.forEach(function(t){var k=per(t);if(m[k]==null){m[k]=o.length;o.push({k:k,h:[]})}var f=function(v){return String(v).replace(/^0/,'').replace(/:00$/,'')},x=f(hh(t.inicio))+' a '+f(hh(t.fin));if(o[m[k]].h.indexOf(x)<0)o[m[k]].h.push(x)});
+  var horas=function(ts){var o=[],m={};ts.slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1}).forEach(function(t){var k=per(t);if(m[k]==null){m[k]=o.length;o.push({k:k,h:[]})}var f=function(v){return String(v).replace(/^0/,'').replace(/:00$/,'')},x=f(hh(t.inicio))+' a '+f(hh(t.fin));if(o[m[k]].h.indexOf(x)<0)o[m[k]].h.push(x)});
     return o.map(function(g){return '<div class="hrs">'+(g.k&&o.length>1?'<b>'+esc(g.k)+':</b> ':'')+esc(g.h.join(' · '))+'\u00a0hs</div>'}).join('')};
   var grupos=[],idx={};
   turnos.forEach(function(t){var k=t.dias+'|'+promo(t)+'|'+planes.map(function(p){return pr(p,t)}).join(',');
@@ -371,7 +371,7 @@ function armar(c){
     var gs=grupos.every(function(g){return pr(p,g.ref)===minP})&&grupos.length>1?[{dias:'',et:'Todos los días',promo:false,todos:true,turnos:grupos.reduce(function(a,g){return a.concat(g.turnos)},[]),ref:grupos[0].ref}]:grupos,mu=multi&&gs.length>1;
     var bands=gs.map(function(g){var v=pr(p,g.ref);
       var tg=mu&&v===minP?'<span class="tag">Mejor precio</span>':'';
-      var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)+(conFer?' y feriados':'')));
+      var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)+(conFer&&/(^|,)\s*6\s*(,|$)/.test(String(g.dias))?' y feriados':'')));
       return '<div class="band">'+tg+'<h4>'+tit+'</h4>'+horas(g.turnos)+'<div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
     var top=kind==='k-base'&&!planes.slice(0,i).some(function(q){return rk(q)===1})&&planes.length>=2;
     var head,body='';
