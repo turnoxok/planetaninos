@@ -255,12 +255,13 @@ function armar(c){
     var chips=prim&&prim.indexOf(' · ')>0?prim.split(' · ').map(function(x){return '<b>'+esc(x)+'</b>'}).join(''):'';
     if(!chips){resto=d}
     var minP=Math.min.apply(null,grupos.map(function(g){return pr(p,g.ref)}));
-    var bands=grupos.map(function(g){var v=pr(p,g.ref);
-      var tag=multi&&v===minP?'<span class="tag">⭐ Mejor precio</span>':'';
-      var tit=(g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)));
+    var gs=grupos.every(function(g){return pr(p,g.ref)===minP})&&grupos.length>1?[{dias:'',et:'Todos los días',promo:false,todos:true,turnos:grupos.reduce(function(a,g){return a.concat(g.turnos)},[]),ref:grupos[0].ref}]:grupos,mu=multi&&gs.length>1;
+    var bands=gs.map(function(g){var v=pr(p,g.ref);
+      var tag=mu&&v===minP?'<span class="tag">⭐ Mejor precio</span>':'';
+      var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)));
       var hrs=g.turnos.map(function(t){return hh(t.inicio)+' a '+hh(t.fin)}).join(' · ')+' hs';
-      return '<div class="band">'+tag+'<h4>'+tit+'</h4><div class="hrs">'+esc(hrs)+'</div><div class="pr"><strong>'+money(v)+'</strong><em>transferencia o efectivo</em></div></div>'}).join('');
-    var top=i===Math.floor(planes.length/2)&&planes.length>=3;
+      return '<div class="band">'+tag+'<h4>'+tit+'</h4><div class="hrs">'+esc(hrs)+'</div><div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
+    var topI=/complet/i.test(c.pgDestacado||'')?planes.reduce(function(b,q,k){return Number(q.precio)>Number(planes[b].precio)?k:b},0):Math.floor(planes.length/2),top=i===topI&&planes.length>=3;
     return '<article class="plan'+(top?' top':'')+'">'+(top&&c.pgDestacado?'<span class="badge">'+esc(c.pgDestacado)+'</span>':'')+'<h2>'+esc(p.nombre)+'</h2>'+(chips?'<div class="meta">'+chips+'</div>':'')+(resto?'<p class="for">'+esc(resto)+'</p>':'')+'<div class="bands">'+bands+'</div><p class="sena">'+cuota(p)+'</p><a class="go" href="./reservar/">'+esc(c.pgBotonPlan||'Reservar este combo')+'</a></article>'}).join('');
   $('upgrade').innerHTML=planes.map(function(p,i){
     var inv=/hasta\s+(\d+)\s+invitados/i.exec(p.descripcion||''),dif=null;
