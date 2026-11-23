@@ -70,7 +70,7 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   .band .tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--ac);color:var(--t-1e3a19,#1e3a19);padding:3px 9px;border-radius:999px;margin-bottom:6px}
   .band .tag.alt{background:rgba(255,255,255,.2);color:#fff}
   .band h4{font-size:.9rem;font-weight:800;line-height:1.25}
-  .band .hrs{font-size:.78rem;opacity:.75;margin-top:2px}
+  .band .hrs{font-size:.8rem;opacity:.85;margin-top:3px}.band .hrs b{font-weight:800}
   .band .pr{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:8px}
   .band .pr s{opacity:.6;font-weight:400;font-size:.9rem}
   .band .pr strong{font-family:'Montserrat',system-ui,sans-serif;font-weight:800;font-size:1.65rem;line-height:1;color:var(--yl)}
@@ -346,10 +346,14 @@ function armar(c){
   show('pasosSec',B.pasos);$('pasos').innerHTML=(B.pasos||[]).map(function(x){return '<div class="st"><h4>'+esc(x.titulo)+'</h4>'+(x.texto?'<p>'+esc(x.texto)+'</p>':'')+'</div>'}).join('');
   show('faqSec',B.faq);$('faq').innerHTML=(B.faq||[]).map(function(x){return '<details><summary>'+esc(x.titulo)+'</summary><p>'+esc(x.texto)+'</p></details>'}).join('');
   /* planes, horarios y precios */
-  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){return a.inicio<b.inicio?-1:1});
+  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1});
   if(!planes.length){$('planes').innerHTML='<p class="cargando">Los planes se publican muy pronto. <a href="./reservar/">Ver disponibilidad</a></p>';$('upgrade').innerHTML='';$('promoSec').hidden=true;return}
   var pr=function(p,t){return p.precios&&p.precios[t.id]!=null?Number(p.precios[t.id]):p.precio};
   var promo=function(t){return /promo/i.test(t.etiqueta||'')};
+  var MES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],mes=function(f){return MES[Number(String(f).slice(5,7))-1]||''},cap=function(x){return x.charAt(0).toUpperCase()+x.slice(1)};
+  var per=function(t){var d=t.desde,h=t.hasta;if(d&&h)return mes(d)===mes(h)?cap(mes(d)):cap(mes(d))+' a '+mes(h);if(h)return 'Hasta '+mes(h);if(d)return 'Desde '+mes(d);return ''};
+  var horas=function(ts){var o=[],m={};ts.forEach(function(t){var k=per(t);if(m[k]==null){m[k]=o.length;o.push({k:k,h:[]})}var f=function(v){return String(v).replace(/^0/,'').replace(/:00$/,'')},x=f(hh(t.inicio))+' a '+f(hh(t.fin));if(o[m[k]].h.indexOf(x)<0)o[m[k]].h.push(x)});
+    return o.map(function(g){return '<div class="hrs">'+(g.k&&o.length>1?'<b>'+esc(g.k)+':</b> ':'')+esc(g.h.join(' · '))+'\u00a0hs</div>'}).join('')};
   var grupos=[],idx={};
   turnos.forEach(function(t){var k=t.dias+'|'+promo(t)+'|'+planes.map(function(p){return pr(p,t)}).join(',');
     if(idx[k]==null){idx[k]=grupos.length;grupos.push({dias:t.dias,promo:promo(t),et:t.etiqueta,turnos:[],ref:t})}grupos[idx[k]].turnos.push(t)});
@@ -368,8 +372,7 @@ function armar(c){
     var bands=gs.map(function(g){var v=pr(p,g.ref);
       var tg=mu&&v===minP?'<span class="tag">Mejor precio</span>':'';
       var tit=(g.todos?'Todos los días y horarios':g.promo?esc((g.et||'Promo')+' · ')+dias(g.dias).toLowerCase():esc(dias(g.dias)));
-      var hrs=g.turnos.map(function(t){return hh(t.inicio)+' a '+hh(t.fin)}).filter(function(x,k,a){return a.indexOf(x)===k}).join(' · ')+' hs';
-      return '<div class="band">'+tg+'<h4>'+tit+'</h4><div class="hrs">'+esc(hrs)+'</div><div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
+      return '<div class="band">'+tg+'<h4>'+tit+'</h4>'+horas(g.turnos)+'<div class="pr"><strong>'+money(v)+'</strong><em>o 3 cuotas sin interés</em></div></div>'}).join('');
     var top=kind==='k-base'&&!planes.slice(0,i).some(function(q){return rk(q)===1})&&planes.length>=2;
     var head,body='';
     if(kind==='k-plus'){
