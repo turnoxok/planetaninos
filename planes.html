@@ -175,6 +175,8 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:4px 0 14px}
   .tile{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 6px 10px;border-radius:18px;background:var(--c0);color:var(--c2);font-weight:800;font-size:.78rem;line-height:1.2}
   .tile svg{display:block;flex:none;width:36px;height:36px;margin:0 0 7px;color:var(--c1)}
+  .tile{position:relative}
+  .tile .mas2{position:absolute;top:-9px;right:-5px;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--c1);color:var(--c1);display:grid;place-items:center;font:800 15px/1 Montserrat,sans-serif;box-shadow:0 3px 8px -3px rgba(40,20,90,.4)}
   .tile small{display:block;font-weight:400;font-size:.7rem;margin-top:3px}
   .plan.in .tile{animation:pop .5s calc(var(--d,0ms) + 450ms + var(--k,0)*140ms) cubic-bezier(.2,1.6,.4,1) both}
   .ult{display:inline-block;background:var(--c0);color:var(--c2);font-weight:800;font-size:.74rem;padding:5px 12px;border-radius:999px;margin:0 6px 10px 0}
@@ -423,7 +425,7 @@ function armar(c){
     if(kind==='k-plus'){
       head='<div class="ph"><h2>Plan Despegue <em>PLUS</em></h2>'+(tag?'<p>'+esc(tag)+'</p>':'')+'<img class="rk" src="'+ROCK+'" alt=""><span class="sig">+</span></div>';
       var tl=[],oth=[],all=/^todo lo del/i;rest.forEach(function(x){var m=/men[uú]/i.test(x)?['menu','Menú de los chicos',(x.match(/para\s+\d+\s+\S+/i)||[''])[0]]:/decoraci/i.test(x)?['deco','Decoración',/b[aá]sica/i.test(x)?'temática básica':'']:/animaci/i.test(x)?['anim','Animación',/edad/i.test(x)?'según la edad':'']:null;if(m)tl.push(m);else if(!all.test(x))oth.push(x)});
-      body='<div class="todo">Todo lo del Plan Despegue</div><div class="tiles">'+tl.map(function(m,k){return '<div class="tile" style="--k:'+k+'">'+IM[m[0]]+esc(m[1])+(m[2]?'<small>'+esc(m[2])+'</small>':'')+'</div>'}).join('')+'</div>'+(oth.length?'<ul class="inc">'+oth.map(function(x,k){return '<li style="--k:'+k+'">'+esc(x)+'</li>'}).join('')+'</ul>':'');
+      body='<div class="todo">Todo lo del Plan Despegue</div><div class="tiles">'+tl.map(function(m,k){return '<div class="tile" style="--k:'+k+'">'+(m[0]!=='menu'?'<span class="mas2" aria-label="extra del Plus">+</span>':'')+IM[m[0]]+esc(m[1])+(m[2]?'<small>'+esc(m[2])+'</small>':'')+'</div>'}).join('')+'</div>'+(oth.length?'<ul class="inc">'+oth.map(function(x,k){return '<li style="--k:'+k+'">'+esc(x)+'</li>'}).join('')+'</ul>':'');
     }else if(kind==='k-promo'){
       var gt=function(x,y,w,r,dl){return '<svg class="gt" viewBox="0 0 48 48" style="--x:'+x+';--y:'+y+';--w:'+w+'px;--r:'+r+'deg;--dl:'+dl+'s">'+I.drop.replace(/^<svg[^>]*>/,'').replace(/<\/svg>$/,'')+'</svg>'};
       head='<div class="ph">'+gt('51%','48%',24,38,.55)+gt('60%','22%',16,38,.7)+'<h2>Promo Diciembre</h2><p>'+esc(tag||'Agua incluida, todos los días y horarios')+'</p><img class="rk" src="'+ROCK+'" alt=""></div>';
