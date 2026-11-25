@@ -59,7 +59,7 @@
   .hs-edad input{font-size:calc(var(--u)*230);line-height:1;-moz-appearance:textfield}
   .hs-edad input::-webkit-outer-spin-button,.hs-edad input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .hs-fecha{left:13.889%;top:84.100%;width:34.259%;height:2.292%;border-radius:12px}
-  .hs-hora{left:13.889%;top:86.392%;width:34.259%;height:2.292%;border-radius:12px}
+  .hs-hora{left:15.2%;top:87.4%;width:25.7%;height:5.4%;border-radius:999px}
   .fhint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;background:rgba(var(--t-223d1e-rgb,34,61,30),.82);color:#fff;font-weight:700;font-size:calc(var(--u)*38);padding:calc(var(--u)*16) calc(var(--u)*30);border-radius:999px;white-space:nowrap;font-family:'Montserrat',sans-serif}
   .fhint.off{display:none}
   .mobhint{display:none}
@@ -134,7 +134,8 @@
 
 <script>
 (function () {
-  var W = 1080, H = 1920, TOUR = 7.6, DUR = 13;
+  var USAR_VIDEO = false;   /* video de fondo apagado por ahora: con true vuelve el recorrido en 3D (assets/inv/fondo.mp4) */
+  var W = 1080, H = 1920, TOUR = USAR_VIDEO ? 7.6 : 1.2, DUR = 13;
   var F = '"Montserrat",system-ui,sans-serif';
   /* colores de marca: todo color fijo que se pinta en el cartel pasa por la paleta de la demo (sin demo no cambia nada) */
   (function () {
@@ -173,7 +174,7 @@
   }
   document.addEventListener('salon', function () { datosLugar(); });
   var $ = function (id) { return document.getElementById(id); };
-  var BG = ['fondo1.jpg', 'fondo2.jpg', 'fondo3.jpg', 'fondo4.jpg'].map(function (n) { var i = new Image(); i.src = './assets/inv/' + n; i.onload = rerender; return i; });
+  var FONDO = new Image(); FONDO.onload = function () { rerender(); }; FONDO.src = './assets/inv/fondo-pn.jpg';   /* fondo fijo de la invitación */
   var SHEEP = new Image(); SHEEP.src = (window.TEMA && TEMA.logo) || './assets/models/planetaninos-logo.png'; SHEEP.onload = rerender;   // el marciano: solo como relleno cuando no hay foto
   var LOGO = new Image(); LOGO.src = (window.TEMA && TEMA.logo) || './assets/models/logo-slogan.svg'; LOGO.onload = function () { STK = null; rerender(); };   // el nombre, sin marciano
   var photo = null, FAST = false, PHV = 0;
@@ -287,6 +288,20 @@
   }
   function plate(c, x, y, w, h, r, ca, cb, rim, sag) {
     if (sag === undefined) sag = Math.min(h * .07, 12);
+    if (rim === 'lime') {   /* cartel lima sólido, con brillo arriba y borde verde oscuro (como la referencia) */
+      c.save();
+      c.shadowColor = 'rgba(18,56,12,.5)'; c.shadowBlur = FAST ? 0 : 30; c.shadowOffsetY = FAST ? 10 : 18;
+      bpath(c, x, y, w, h, r, sag);
+      var g0 = c.createLinearGradient(0, y, 0, y + h + sag); g0.addColorStop(0, '#c4ee45'); g0.addColorStop(.5, '#a2da1f'); g0.addColorStop(1, '#78bb14');
+      c.fillStyle = g0; c.fill(); c.shadowColor = 'transparent';
+      c.save(); bpath(c, x, y, w, h, r, sag); c.clip();
+      var gt = c.createLinearGradient(0, y, 0, y + h * .5); gt.addColorStop(0, 'rgba(255,255,255,.45)'); gt.addColorStop(1, 'rgba(255,255,255,0)');
+      c.fillStyle = gt; c.fillRect(x, y, w, h * .5);
+      c.restore();
+      bpath(c, x + 2, y + 2, w - 4, h - 4, r - 2, sag); c.lineWidth = 5; c.strokeStyle = '#5f9f10'; c.stroke();
+      bpath(c, x + 6, y + 6, w - 12, h - 12, r - 6, sag); c.lineWidth = 2; c.strokeStyle = 'rgba(235,255,150,.8)'; c.stroke();
+      c.restore(); return;
+    }
     c.save();
     c.shadowColor = 'rgba(18,56,12,.55)'; c.shadowBlur = FAST ? 0 : 36; c.shadowOffsetY = FAST ? 12 : 22;
     bpath(c, x, y, w, h, r, sag);
@@ -365,7 +380,7 @@
   var VID = document.createElement('video');
   VID.muted = true; VID.defaultMuted = true; VID.playsInline = true; VID.setAttribute('playsinline', ''); VID.setAttribute('webkit-playsinline', ''); VID.preload = 'auto';
   var DEMO = !!(window.TEMA && TEMA.demoId && !TEMA.cliente);   /* en las demos el fondo es una imagen fija y el video no está disponible */
-  if (!DEMO) VID.src = './assets/inv/fondo.mp4';   /* si el video no carga, se usan las imágenes fondo1-4 */
+  if (!DEMO && USAR_VIDEO) VID.src = './assets/inv/fondo.mp4';   /* si el video no carga, se usan las imágenes fondo1-4 */
   VID.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none'; document.body.appendChild(VID);
   function vidOk() { return VID.readyState >= 2 && VID.videoWidth > 0; }
   function restT() { return Math.max(0, (VID.duration || 13) - .12); }
@@ -411,63 +426,18 @@
       var ov2 = c.createLinearGradient(0, 0, 0, H); ov2.addColorStop(0, 'rgba(61,142,48,.10)'); ov2.addColorStop(1, 'rgba(46,113,35,.22)'); c.fillStyle = ov2; c.fillRect(0, 0, W, H);
       return;
     }
+    if (!USAR_VIDEO) {
+      if (FONDO.complete && FONDO.naturalWidth) cover(c, FONDO, 0, 0, W, H, 1); else { c.fillStyle = '#4fb7f2'; c.fillRect(0, 0, W, H); }
+      return;
+    }
     if (vidOk() && !VID.seeking) {
       cover(c, VID, 0, 0, W, H, 1.02);
       if (Math.abs(VID.currentTime - restT()) < .3) { if (!SNAP) { SNAP = document.createElement('canvas'); SNAP.width = 540; SNAP.height = 960; } cover(SNAP.getContext('2d'), VID, 0, 0, 540, 960, 1.02); }
     } else if (SNAP) c.drawImage(SNAP, 0, 0, W, H);
-    else if (BG[3] && BG[3].complete && BG[3].naturalWidth) cover(c, BG[3], 0, 0, W, H, 1.02);
     else { c.fillStyle = '#68c359'; c.fillRect(0, 0, W, H); }
     var ov = c.createLinearGradient(0, 0, 0, H); ov.addColorStop(0, 'rgba(61,142,48,.22)'); ov.addColorStop(.5, 'rgba(70,152,56,.10)'); ov.addColorStop(1, 'rgba(46,113,35,.40)');
     c.fillStyle = ov; c.fillRect(0, 0, W, H);
   }
-  function drawScene(c, t) {
-    // cielo
-    var g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#7dd36f'); g.addColorStop(.55, '#68c359'); g.addColorStop(1, '#59b44a');
-    c.fillStyle = g; c.fillRect(0, 0, W, H);
-    var gl = c.createRadialGradient(W * .8, 0, 20, W * .8, 0, 900); gl.addColorStop(0, 'rgba(170,247,158,.45)'); gl.addColorStop(1, 'rgba(170,247,158,0)'); c.fillStyle = gl; c.fillRect(0, 0, W, H);
-
-    // plataformas traseras (derecha e izquierda)
-    function slab(x0, x1, yt, yb, top, side) {
-      var g1 = c.createLinearGradient(0, yt, 0, yb); g1.addColorStop(0, side); g1.addColorStop(1, '#50ab41');
-      c.fillStyle = g1; rrect(c, x0, yt, x1 - x0, yb - yt, 30); c.fill();
-      c.beginPath(); c.ellipse((x0 + x1) / 2, yt + 6, (x1 - x0) / 2, 34, 0, 0, 7); c.fillStyle = top; c.fill();
-    }
-    slab(X(715), X(960), Y(900), Y(1050), '#8fe082', '#6ac75b');
-    slab(X(-20), X(250), Y(1040), Y(1300), '#8fe082', '#6ac75b');
-    // escalera + arco a la izquierda
-    for (var i = 0; i < 6; i++) { var yy = Y(840 - i * 28); c.fillStyle = i % 2 ? '#d9ecd6' : '#bde0b7'; rrect(c, X(80 + i * 14), yy, X(190 - i * 6), L(22), 8); c.fill(); }
-    c.fillStyle = '#6ac75b'; c.beginPath(); c.arc(X(150), Y(640), L(60), Math.PI, 0); c.lineTo(X(210), Y(760)); c.lineTo(X(90), Y(760)); c.closePath(); c.fill();
-    c.fillStyle = '#7dd36f'; c.beginPath(); c.arc(X(150), Y(655), L(36), Math.PI, 0); c.lineTo(X(186), Y(760)); c.lineTo(X(114), Y(760)); c.closePath(); c.fill();
-    // esfera gris
-    var sg = c.createRadialGradient(X(30), Y(550), 4, X(40), Y(575), L(46)); sg.addColorStop(0, '#f1f6f0'); sg.addColorStop(1, '#8ea68a');
-    c.fillStyle = sg; c.beginPath(); c.arc(X(38), Y(575), L(42), 0, 7); c.fill();
-    // chapa redonda con la oveja
-    c.beginPath(); c.arc(X(172), Y(505), L(60), 0, 7); c.fillStyle = '#35c4df'; c.fill();
-    c.beginPath(); c.arc(X(172), Y(505), L(49), 0, 7); c.fillStyle = '#59b44a'; c.fill();
-    star(c, X(172), Y(505), L(30), L(13), 0); c.fillStyle = '#ffd24a'; c.fill();
-    // disco naranja izquierdo y derecho
-    function disc(cx, cy, rx, col) { c.fillStyle = '#c24a1a'; c.beginPath(); c.ellipse(cx, cy + 12, rx, rx * .3, 0, 0, 7); c.fill(); c.fillStyle = col; c.beginPath(); c.ellipse(cx, cy, rx, rx * .3, 0, 0, 7); c.fill(); }
-    disc(X(115), Y(768), L(36), '#f5782f'); disc(X(850), Y(868), L(50), '#f5782f');
-
-    // torre central + aro cian arriba
-    cyl(c, X(300), X(715), Y(0), Y(1010), '#77d168', '#5aba4a');
-    c.fillStyle = 'rgba(255,255,255,.07)'; c.fillRect(X(300), Y(0), X(30), Y(900));
-    c.beginPath(); c.ellipse(X(507), Y(5), L(262), L(70), 0, 0, 7); c.fillStyle = '#3cc3dc'; c.fill();
-    c.beginPath(); c.ellipse(X(507), Y(30), L(262), L(70), 0, 0, Math.PI); c.fillStyle = '#259fc0'; c.fill();
-    c.beginPath(); c.ellipse(X(507), Y(12), L(215), L(52), 0, 0, 7); c.fillStyle = '#59b44a'; c.fill();
-    c.beginPath(); c.ellipse(X(507), Y(20), L(215), L(52), 0, 0, 7); c.fillStyle = '#6ac75b'; c.fill();
-
-    // escalón circular alrededor del pedestal + piso
-    var fg = c.createLinearGradient(0, Y(1100), 0, H); fg.addColorStop(0, '#87d87a'); fg.addColorStop(1, '#67c258');
-    c.fillStyle = fg; c.beginPath(); c.ellipse(X(512), Y(1330), L(620), L(230), 0, 0, 7); c.fill();
-    c.strokeStyle = 'rgba(91,208,231,.9)'; c.lineWidth = 5; c.beginPath(); c.ellipse(X(512), Y(1330), L(620), L(230), 0, Math.PI * 1.08, Math.PI * 1.38); c.stroke();
-    ell(c, X(512), Y(1130), L(330), L(52), '#77d168', '#51ab42', '#5bd0e7');
-    ell(c, X(512), Y(1100), L(270), L(40), '#87d87a', '#59b44a', '#8fdcf0');
-    // esfera azul abajo a la derecha
-    var sg2 = c.createRadialGradient(X(985), Y(1200), 4, X(1000), Y(1235), L(60)); sg2.addColorStop(0, '#d7e3f5'); sg2.addColorStop(1, '#6f8fc0');
-    c.fillStyle = sg2; c.beginPath(); c.arc(X(1005), Y(1235), L(56), 0, 7); c.fill();
-  }
-
   // Dibuja un cuadro de la invitación. c: contexto, k: escala (ancho / 1080), t: segundos
   function draw(c, k, tAbs) {
     var t = tAbs >= 90 ? tAbs : tAbs - TOUR;   // el recorrido va primero; las placas entran después
@@ -501,15 +471,17 @@
     c.restore();
 
     // foto en aro cian con corona
-    var pc = outBack(prog(t, .5, 1.3)), cx = X(500), cy = Y(617), rr = Math.max(pc, 0.001), r = L(203) * rr, ro = L(243) * rr;
+    var pc = outBack(prog(t, .5, 1.3)), cx = X(500), cy = Y(617), rr = Math.max(pc, 0.001), r = L(190) * rr, ro = L(243) * rr;
     c.save();
     c.shadowColor = 'rgba(18,56,12,.55)'; c.shadowBlur = FAST ? 0 : 40; c.shadowOffsetY = FAST ? 14 : 22;
     c.beginPath(); c.arc(cx, cy, ro, 0, 7);
-    var rg = c.createLinearGradient(cx - ro, cy - ro, cx + ro, cy + ro); rg.addColorStop(0, '#4f8a43'); rg.addColorStop(1, '#2c4f26');
+    var rg = c.createLinearGradient(cx, cy - ro, cx, cy + ro); rg.addColorStop(0, '#c4ee45'); rg.addColorStop(.5, '#a2da1f'); rg.addColorStop(1, '#78bb14');
     c.fillStyle = rg; c.fill(); c.shadowColor = 'transparent';
-    plate(c, cx + ro - L(8), cy - L(38) * rr, L(34) * rr + 2, L(76) * rr, L(14), '#4f8a43', '#2c4f26', '#6fa062');
-    c.beginPath(); c.arc(cx, cy, ro, 0, 7); c.lineWidth = 4; c.strokeStyle = 'rgba(255,255,255,.55)'; c.stroke();
-    c.beginPath(); c.arc(cx, cy, r + L(10), 0, 7); c.fillStyle = 'rgba(37,103,27,.6)'; c.fill();
+    c.beginPath(); c.arc(cx, cy, ro - 2.5, 0, 7); c.lineWidth = 5; c.strokeStyle = '#5f9f10'; c.stroke();
+    c.beginPath(); c.arc(cx, cy, ro - 7, 0, 7); c.lineWidth = 2; c.strokeStyle = 'rgba(235,255,150,.8)'; c.stroke();
+    /* lamparitas blancas del aro */
+    for (var q = 0; q < 8; q++) { var an = (q + .5) / 8 * Math.PI * 2; c.beginPath(); c.arc(cx + Math.cos(an) * (ro + r) / 2, cy + Math.sin(an) * (ro + r) / 2, L(10) * rr, 0, 7); c.fillStyle = '#fff'; c.fill(); c.lineWidth = 3; c.strokeStyle = 'rgba(95,159,16,.7)'; c.stroke(); }
+    c.beginPath(); c.arc(cx, cy, r + L(5), 0, 7); c.fillStyle = '#5f9f10'; c.fill();
     c.beginPath(); c.arc(cx, cy, r, 0, 7); c.clip();
     if (photo) { cover(c, photo, cx - r, cy - r, r * 2, r * 2, 1); }
     else { c.fillStyle = '#83b27c'; c.fillRect(cx - r, cy - r, r * 2, r * 2); if (SHEEP.complete && SHEEP.naturalWidth) { var sw2 = r * 1.7; c.drawImage(SHEEP, cx - sw2 / 2, cy - sw2 * .13, sw2, sw2 * SHEEP.naturalHeight / SHEEP.naturalWidth); } }
@@ -519,7 +491,7 @@
     var a2 = outBack(prog(t, .35, 1.1));
     c.save(); c.translate(CX, Y(362)); c.scale(Math.max(a2, .001), Math.max(a2, .001));
     warp(c, -L(320), -L(59), L(640), L(118), 20, function (c) {
-      plate(c, -L(320), -L(59), L(640), L(118), L(52), '#68c859', '#409232', '#5bd0e7', 0);
+      plate(c, -L(320), -L(59), L(640), L(118), L(52), 0, 0, 'lime', 0);
       c.font = '800 80px ' + F; fit(c, '¡ESTÁS INVITADO!', L(563), 80, 800);
       var w1 = c.measureText('¡ESTÁS ').width, w2 = c.measureText('INVITADO!').width, x0 = -(w1 + w2) / 2, fs1 = parseInt(c.font.match(/(\d+)px/)[1], 10);
       c.textAlign = 'left'; stext(c, '¡ESTÁS ', x0, fs1 * .3, '#fafff9'); stext(c, 'INVITADO!', x0 + w1, fs1 * .3, '#fafff9'); c.textAlign = 'center';
@@ -530,7 +502,7 @@
     var a3 = outCubic(prog(t, 1.1, 1.8));
     c.save(); c.globalAlpha = a3; c.translate(0, (1 - a3) * 60);
     warp(c, CX - L(224), Y(810), L(448), L(145), 22, function (c) {
-      plate(c, CX - L(224), Y(810), L(448), L(145), L(62), '#68c859', '#409232', '#5bd0e7', 0);
+      plate(c, CX - L(224), Y(810), L(448), L(145), L(62), 0, 0, 'lime', 0);
       c.textAlign = 'center'; var fs0 = fit(c, S.nombre, L(345), 150, 800, 56);
       stext(c, S.nombre, CX, Y(810) + L(145) / 2 + fs0 * .27, '#fff');
     });
@@ -729,7 +701,7 @@
       var i = 0, vdur = 0;
       function listo() {   // espera a que el video de fondo tenga datos
         return new Promise(function (ok) {
-          if (vidOk() || VID.error) { ok(); return; }
+          if (!USAR_VIDEO || vidOk() || VID.error) { ok(); return; }
           var f = function () { if (vidOk()) { VID.removeEventListener('loadeddata', f); VID.removeEventListener('canplay', f); ok(); } };
           VID.addEventListener('loadeddata', f); VID.addEventListener('canplay', f); try { VID.load(); } catch (e) {} setTimeout(function () { ok(); }, 8000);
         });
