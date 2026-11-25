@@ -4299,6 +4299,7 @@ function releaseSvgGeo(key) {
 const BK_P = {};
 const BK_M = {};
 window.__SVG_GEO = SVG_GEO;
+function bkUrl(u) { u = String(u || ""); if (u.slice(0, 5) !== "data:") return u; let h = 2166136261; u.split("").forEach(function (c) { h = Math.imul(h ^ c.charCodeAt(0), 16777619) &gt;&gt;&gt; 0; }); return "data:" + u.length + ":" + h.toString(36); }
 function bakedSvgGeo(key, lite) {
   if (typeof OBJECTS === "undefined" || typeof DecompressionStream === "undefined" || !window.fetch) return Promise.resolve(null);
   const t = lite ? "lite" : "full";
@@ -4349,7 +4350,7 @@ function SvgExtrudeBody({ url, data, fade, hasFade, shadows }) {
   useEffect(() =&gt; {
     let off = false;
     let tries = 0, timer = null;
-    const gkey = [url, ext, bev, seg, lite ? 1 : 0, rev ? 1 : 0, arc].join("|");
+    const gkey = [bkUrl(url), ext, bev, seg, lite ? 1 : 0, rev ? 1 : 0, arc].join("|");
     window.__wbStarted = (window.__wbStarted || 0) + 1; window.__wbPend = (window.__wbPend || 0) + 1;
     let fin = false;
     const done = () =&gt; { if (fin) return; fin = true; requestAnimationFrame(() =&gt; requestAnimationFrame(() =&gt; { window.__wbPend = Math.max(0, (window.__wbPend || 1) - 1); })); };
@@ -8520,6 +8521,7 @@ function FadeGroup({ obj, fade, children }) {
 //@@use svgSchedule
 //@@use BK_P
 //@@use BK_M
+//@@use bkUrl
 //@@use bakedSvgGeo
 //@@use SvgExtrudeBody
 //@@use isBallsUrl
@@ -11172,7 +11174,8 @@ function buildFullHtml(boneCode, scenesCode, movementCode, scrollLengthCode, obj
       tpl.slice(im0, im1).replace(/"(https:\/\/esm\.sh\/[^"]+)"/g, (_, u) => { if (urls.indexOf(u) < 0) urls.push(u); return _; });
       const glbs = [];
       String(objectsCode || "").replace(/url:\s*"(\.\/[^"]+\.glb)"/g, (_, u) => { if (glbs.indexOf(u) < 0) glbs.push(u); return _; });
-      const pre = ['<link rel="preconnect" href="https://esm.sh" crossorigin />'].concat(urls.map((u) => '<link rel="modulepreload" crossorigin href="' + u + '" />'), glbs.map((u) => '<link rel="preload" as="fetch" crossorigin href="' + u + '" />')).join("\n");
+      const warm = '<script>try{var q=new URLSearchParams(location.search).get("q"),c=(q==="2"?false:(q==="1"||q==="0")?true:(window.matchMedia&&matchMedia("(pointer: coarse)").matches))?"lite":"full";["json","bin.gz"].forEach(function(e){var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="./bk-"+c+"."+e;document.head.appendChild(l);});}catch(e){}</' + 'script>';
+      const pre = ['<link rel="preconnect" href="https://esm.sh" crossorigin />'].concat(urls.map((u) => '<link rel="modulepreload" crossorigin href="' + u + '" />'), glbs.map((u) => '<link rel="preload" as="fetch" crossorigin href="' + u + '" />'), [warm]).join("\n");
       tpl = tpl.slice(0, im0) + pre + "\n" + tpl.slice(im0);
     }
   } catch (e) { /* si falla, el sitio se exporta igual, sin precargas */ }
