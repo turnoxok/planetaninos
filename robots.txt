@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /panel/
 
-Sitemap: https://turnoxok.github.io/planetaninos/sitemap.xml
+Sitemap: https://planetaninos.tuweeb.com/sitemap.xml
