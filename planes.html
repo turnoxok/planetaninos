@@ -407,7 +407,7 @@ function armar(c){
   show('pasosSec',B.pasos);$('pasos').innerHTML=(B.pasos||[]).map(function(x){return '<div class="st"><h4>'+esc(x.titulo)+'</h4>'+(x.texto?'<p>'+esc(x.texto)+'</p>':'')+'</div>'}).join('');
   show('faqSec',B.faq);$('faq').innerHTML=(B.faq||[]).map(function(x){return '<details><summary>'+esc(x.titulo)+'</summary><p>'+esc(x.texto)+'</p></details>'}).join('');
   /* planes, horarios y precios */
-  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1}),conFer=turnos.some(function(t){return /feriado/i.test(t.etiqueta||'')});turnos=turnos.filter(function(t){return !/feriado/i.test(t.etiqueta||'')});
+  var rk=function(q){return /promo/i.test(q.nombre)?3:/plus/i.test(q.nombre)?2:1},planes=(c.planes||[]).slice().sort(function(a,b){return rk(a)-rk(b)||(a.orden-b.orden)}),turnos=(c.turnos||[]).slice().sort(function(a,b){var x=(a.desde||'')+a.inicio,y=(b.desde||'')+b.inicio;return x<y?-1:1}),conFer=turnos.some(function(t){return /feriado/i.test(t.etiqueta||'')});turnos=turnos.filter(function(t){return !/feriado/i.test(t.etiqueta||'')});planes=planes.filter(function(p){return !/bautism/i.test(p.nombre)});turnos=turnos.filter(function(t){return !/bautism/i.test(t.etiqueta||'')});
   if(!planes.length){$('planes').innerHTML='<p class="cargando">Los planes se publican muy pronto. <a href="./reservar/">Ver disponibilidad</a></p>';$('upgrade').innerHTML='';$('promoSec').hidden=true;return}
   var pr=function(p,t){return p.precios&&p.precios[t.id]!=null?Number(p.precios[t.id]):p.precio};
   var promo=function(t){return /promo/i.test(t.etiqueta||'')};
@@ -453,7 +453,7 @@ function armar(c){
   /* Bautismos (datos que pasó el salón). Se consultan por WhatsApp porque las fechas son pocas y se arreglan una por una. */
   (function(){var tel=String(c.whatsapp||'').replace(/\D/g,''),sec=$('bautismoSec'),box=$('bautismos');if(!sec||!box)return;
     var BAU=[
-      {k:'k-bau',nombre:'Bautismo para 40',tag:'Hasta 40 invitados',chips:['30 adultos','10 niños','12 a 16 hs'],precio:290000,sena:150000,
+      {k:'k-bau',nombre:'Bautismo para 40',tag:'Hasta 40 invitados',chips:['30 adultos','10 niños','4 horas'],precio:290000,sena:150000,
        fechas:'Domingos 6 y 20 de diciembre',
        inc:['Salón climatizado','Parque y galería semicubierta','Juegos básicos del predio para los niños (sin inflables ni pelotero)','Mobiliario y vajilla para todos los invitados','Vajilla de vidrio para adultos y plástica para niños','Servicio de 1 mozo','Coordinación y acompañamiento durante el evento','Limpieza y emergencias médicas']},
       {k:'k-bau2',nombre:'Bautismo para 60',tag:'Hasta 60 invitados',chips:['50 adultos','10 niños','4 horas'],precio:390000,sena:150000,

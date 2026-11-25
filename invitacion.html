@@ -174,8 +174,8 @@
   document.addEventListener('salon', function () { datosLugar(); });
   var $ = function (id) { return document.getElementById(id); };
   var FONDO = new Image(); FONDO.onload = function () { rerender(); }; FONDO.src = './assets/inv/fondo-pn.jpg';   /* fondo fijo de la invitación */
-  var SHEEP = new Image(); SHEEP.src = (window.TEMA && TEMA.logo) || './assets/models/planetaninos-logo.png'; SHEEP.onload = function () { MSTK = null; rerender(); };   // el marciano: solo como relleno cuando no hay foto
-  var LOGO = new Image(); LOGO.src = (window.TEMA && !TEMA.cliente && TEMA.logo) || './assets/models/logo-slogan.svg'; LOGO.onload = function () { STK = null; rerender(); };   // el nombre, sin marciano
+  var SHEEP = new Image(); SHEEP.src = (window.TEMA && TEMA.logo) || './assets/models/planetaninos-logo.png'; SHEEP.onload = function () { CSTK = null; rerender(); };   // el marciano: solo como relleno cuando no hay foto
+  var LOGO = new Image(); LOGO.src = (window.TEMA && !TEMA.cliente && TEMA.logo) || './assets/models/logo-slogan.svg'; LOGO.onload = function () { STK = null; CSTK = null; rerender(); };   // el nombre, sin marciano
   var photo = null, FAST = false, PHV = 0;
   function sig() { return JSON.stringify(state()) + '|' + PHV; }
   var DEFOTO = new Image(); DEFOTO.onload = function () { if (!photo) { photo = DEFOTO; PHV++; rerender(); } }; DEFOTO.src = './assets/inv/foto.jpg';
@@ -375,17 +375,17 @@
     y.drawImage(a, 0, 0); b.k = lw; b.pad = pad; STK = b; return b;
   }
 
-  /* Marciano solo, arriba del nombre (Planeta Niños): con la misma silueta blanca que el letrero. */
-  var MSTK = null;
-  function stickerMarc(mw, mh) {
-    if (MSTK && MSTK.k === mw) return MSTK;
-    var pad = Math.round(mw * .07), r = Math.round(mw * .05), w = mw + pad * 2, h = mh + pad * 2;
+  /* Marciano + nombre de Planeta Niños: una sola silueta blanca para los dos. */
+  var CSTK = null;
+  function stickerCombo(lw, lh, mw, mh, ov) {
+    var key = [lw, lh, mw, mh, ov].join('|'); if (CSTK && CSTK.k === key) return CSTK;
+    var pad = Math.round(lw * .036), r = Math.round(lw * .026), w = lw + pad * 2, h = mh + lh - ov + pad * 2;
     var a = document.createElement('canvas'); a.width = w; a.height = h; var x = a.getContext('2d');
-    x.drawImage(SHEEP, pad, pad, mw, mh);
+    x.drawImage(SHEEP, Math.round((w - mw) / 2), pad, mw, mh); x.drawImage(LOGO, pad, pad + mh - ov, lw, lh);
     x.globalCompositeOperation = 'source-in'; window.__rawFill = true; x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); window.__rawFill = false;
     var b = document.createElement('canvas'); b.width = w; b.height = h; var y = b.getContext('2d');
-    [r, r * .66, r * .33].forEach(function (rad) { for (var k = 0; k < 28; k++) { var an = k / 28 * Math.PI * 2; y.drawImage(a, Math.cos(an) * rad, Math.sin(an) * rad); } });
-    y.drawImage(a, 0, 0); b.k = mw; b.pad = pad; MSTK = b; return b;
+    [r, r * .66, r * .33].forEach(function (rad) { for (var k = 0; k < 32; k++) { var an = k / 32 * Math.PI * 2; y.drawImage(a, Math.cos(an) * rad, Math.sin(an) * rad); } });
+    y.drawImage(a, 0, 0); b.k = key; CSTK = b; return b;
   }
 
   // Fondo: video de una toma recorriendo la escena 3D (una sola vez; al final queda el último cuadro)
@@ -478,11 +478,19 @@
     if (LOGO.complete && LOGO.naturalWidth) {
       /* el logo entra en una caja propia (arriba del cartel): nunca tapa ni queda tapado por "ESTÁS INVITADO" y la foto */
       var ar = LOGO.naturalWidth / LOGO.naturalHeight, mh = Y(190); lw = Math.min(ar > 3 ? L(740) : L(720), mh * (ar > 3 ? 1.6 : 1) * ar); lh = lw / ar; lw = Math.round(lw); lh = Math.round(lh);
-      var conMarc = !!(window.TEMA && TEMA.cliente && SHEEP.complete && SHEEP.naturalWidth), ly = Y(185) + (conMarc ? L(16) : 0) - lh / 2, st = sticker(lw, lh), pd = st.pad; c.shadowColor = 'rgba(10,40,8,.45)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = 12; c.drawImage(st, CX - lw / 2 - pd, ly - pd); c.shadowColor = 'transparent'; c.drawImage(LOGO, CX - lw / 2, ly, lw, lh);
+      var conMarc = !!(window.TEMA && TEMA.cliente && SHEEP.complete && SHEEP.naturalWidth);
       if (conMarc) {
-        var mh = Math.round(L(104)), mw = Math.round(mh * SHEEP.naturalWidth / SHEEP.naturalHeight), mtop = Math.max(L(16), ly - pd - mh - L(2));
-        mh = Math.round(Math.min(mh, ly - pd - L(16) + L(2))); mw = Math.round(mh * SHEEP.naturalWidth / SHEEP.naturalHeight); mtop = Math.round(Math.max(L(16), ly - pd - mh - L(2)));
-        var ms = stickerMarc(mw, mh), mp = ms.pad; c.shadowColor = 'rgba(10,40,8,.4)'; c.shadowBlur = FAST ? 0 : 16; c.shadowOffsetY = 8; c.drawImage(ms, CX - mw / 2 - mp, mtop - mp); c.shadowColor = 'transparent'; c.drawImage(SHEEP, CX - mw / 2, mtop, mw, mh);
+        /* Marciano + nombre: una sola pieza, con una única silueta blanca que los une (el marciano apoya sobre el letrero). */
+        lw = Math.round(lw * .94); lh = Math.round(lh * .94);
+        var ov = Math.round(L(22)), pd = Math.round(lw * .036), base = Y(185) + L(16) + lh / 2;   // base: donde termina el letrero
+        var mh = Math.round(L(168)), mw;
+        mh = Math.round(Math.min(mh, base - lh + ov - (pd + L(8))));
+        mw = Math.round(mh * SHEEP.naturalWidth / SHEEP.naturalHeight);
+        var top = Math.round(base - (mh + lh - ov)), cs = stickerCombo(lw, lh, mw, mh, ov);
+        c.shadowColor = 'rgba(10,40,8,.45)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = 12; c.drawImage(cs, CX - lw / 2 - pd, top - pd); c.shadowColor = 'transparent';
+        c.drawImage(SHEEP, CX - mw / 2, top, mw, mh); c.drawImage(LOGO, CX - lw / 2, top + mh - ov, lw, lh);
+      } else {
+      var ly = Y(185) - lh / 2, st = sticker(lw, lh), pd = st.pad; c.shadowColor = 'rgba(10,40,8,.45)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = 12; c.drawImage(st, CX - lw / 2 - pd, ly - pd); c.shadowColor = 'transparent'; c.drawImage(LOGO, CX - lw / 2, ly, lw, lh);
       }
     }
     c.restore();
@@ -863,7 +871,7 @@
   if (window.TEMA && TEMA.listo) TEMA.listo.then(function () {
     datosLugar(); var u = TEMA.logo; if (u) { if (!TEMA.cliente && LOGO.getAttribute('src') !== u) LOGO.src = u; if (SHEEP.getAttribute('src') !== u) SHEEP.src = u; }
     var bc = (TEMA.silColor || (TEMA.color ? '#' + TEMA.color : ''));
-    if (bc && TEMA.demo) document.querySelectorAll('button.wa svg').forEach(function (v) { v.style.fill = bc; });
+    if (bc && TEMA.demo && !TEMA.cliente && !/^#?(f|e)[0-9a-f](f|e)[0-9a-f](f|e)[0-9a-f]$/i.test(String(bc).replace('#', ''))) document.querySelectorAll('button.wa svg').forEach(function (v) { v.style.fill = bc; });   /* el ícono toma el color de la marca, pero nunca uno casi blanco (se perdía sobre el botón blanco) */
     fondoDemo(); STK = null; rerender();
   });
   /* video: no disponible en la demo */
