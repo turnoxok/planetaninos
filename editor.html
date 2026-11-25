@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html lang="es"><head>
-<script>/* Un solo editor: la copia que viaja con la web de un cliente manda al editor de su ficha (guardar y publicar directo). ?libre=1 la deja abrir suelta. */
-(function(){try{var h=location.hostname,q=location.search;if(/[?&]libre=1/.test(q)||!h||h==="demo.tuweeb.com"||h==="localhost"||h==="127.0.0.1"||/\.test$/.test(h)||/[?&]d=/.test(q))return;var m=/^([a-z0-9-]+)\.tuweeb\.com$/.exec(h);location.replace("https://demo.tuweeb.com/admin/"+(m&&m[1]!=="www"?"?ed="+m[1]:""));}catch(e){}})();</script>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7876,6 +7874,7 @@ function App() {
 
 </textarea>
 
+<script src="./tema.js?v=49"></script>
 <script type="importmap">
 {
   "imports": {
@@ -10568,7 +10567,7 @@ function generateSeoPack(seoIn, dockIn, objects, sections, menuIn, fabIn) {
   }
   if (s.themeColor) head.push('<meta name="theme-color" content="' + seoEsc(s.themeColor) + '" />');
   /* Si el sitio enlaza a planes o a reservas, los datos de planes se piden en segundo plano cuando el 3D ya cargó: la página de planes abre ya lista. */
-  if (/\.\/(planes\.html|reservar\/)/.test(JSON.stringify([(menuIn && menuIn.items) || [], fabIn && fabIn.enabled ? fabIn.reservarUrl : ""]))) { head.push('<script src="./tema.js?v=44"></' + 'script>'); head.push("<" + "script>(function(){function go(){fetch('./reservar/config.json').then(function(r){return r.json()}).then(function(c){return fetch(c.api+'?action=config'+(c.cliente?'&cl='+encodeURIComponent(c.cliente):''))}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.data&&j.data.planes)localStorage.setItem('planes-cfg-v3',JSON.stringify(j.data))}).catch(function(){})}addEventListener('load',function(){(window.requestIdleCallback||function(f){setTimeout(f,3000)})(go,{timeout:8000})})})();" + "</" + "script>"); }
+  if (/\.\/(planes\.html|reservar\/)/.test(JSON.stringify([(menuIn && menuIn.items) || [], fabIn && fabIn.enabled ? fabIn.reservarUrl : ""]))) { head.push('<script src="./tema.js?v=42"></' + 'script>'); head.push("<" + "script>(function(){function go(){fetch('./reservar/config.json').then(function(r){return r.json()}).then(function(c){return fetch(c.api+'?action=config'+(c.cliente?'&cl='+encodeURIComponent(c.cliente):''))}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.data&&j.data.planes)localStorage.setItem('planes-cfg-v3',JSON.stringify(j.data))}).catch(function(){})}addEventListener('load',function(){(window.requestIdleCallback||function(f){setTimeout(f,3000)})(go,{timeout:8000})})})();" + "</" + "script>"); }
   head.push('<meta property="og:type" content="website" />');
   head.push('<meta property="og:locale" content="' + seoEsc(String(s.lang || "es").replace("-", "_")) + '" />');
   if (title) head.push('<meta property="og:title" content="' + seoEsc(title) + '" />');
@@ -11672,6 +11671,77 @@ function Presets({ items, onPick }) {
 function Btn({ icon, kind, children, ...rest }) {
   return <button className={`btn ${kind || ""}`} {...rest}>{icon && <Icon name={icon} size={14} />}{children}</button>;
 }
+/* Editor abierto desde la ficha de un salón del admin (?d=<demo>): el proyecto 3D de ese salón se lee y se guarda en su ficha, sin GitHub. */
+/* El 3D base de las demos viene con los datos de Planeta Niños: acá se cambia por los del salón (nombre, logo, dirección, WhatsApp), igual que se ve en su demo. */
+const adaptarBaseADemo = (P) => {
+  try {
+    const T = window.TEMA;
+    /* 3D propio del cliente (ej. Planeta Niños): se respeta tal cual, sin cambiarle datos ni colores */
+    if (P && P.tuweebPropio) { if (T) T.sinRecolor = true; return P; }
+    if (T) T.sinRecolor = false;
+    if (!T || !T.demo || !/Planeta Ni/i.test(P.projectName || "")) return P;
+    const nom = T.nombre || T.demo.nombre || "";
+    if (T.aplicarDatos) T.aplicarDatos(P);
+    /* El cartel del logo: en el proyecto las posiciones y tamaños viven por etapa (objectTransformsByKf), por eso se ajusta acá y no con TEMA.aplicarObjetos (que trabaja sobre el sitio ya exportado). Mismas cuentas. */
+    if (T.logo3d && Array.isArray(P.objects)) {
+      const TF = P.objectTransformsByKf || (P.objectTransformsByKf = {});
+      const mult = Math.min(5.014 / T.logo3d.aspect, 2.2) * 1.18;
+      const hexDe = (c) => { if (/^#/.test(c)) return c.length === 4 ? "#" + c.slice(1).split("").map((x) => x + x).join("") : c; const n = (String(c).match(/[\d.]+/g) || [0, 0, 0]).slice(0, 3).map(Number); return "#" + n.map((v) => ("0" + Math.max(0, Math.min(255, Math.round(v))).toString(16)).slice(-2)).join(""); };
+      const copia = (o, id, etiqueta, cambios, porEtapa) => {
+        const n = Object.assign(JSON.parse(JSON.stringify(Object.assign({}, o, { previewUrl: null }))), cambios, { id, label: etiqueta });
+        const st = JSON.parse(JSON.stringify(TF[o.id] || {}));
+        Object.keys(st).forEach((k) => { if (st[k] && typeof st[k].scale === "number") porEtapa(st[k]); });
+        TF[id] = st; return n;
+      };
+      const extra = [];
+      P.objects.slice().forEach((o) => {
+        if (!/logo-slogan[.]svg/.test(o.url || "")) return;
+        o.url = T.logo3d.url;
+        Object.values(TF[o.id] || {}).forEach((k) => { if (k && typeof k.scale === "number") k.scale *= mult; });
+        if (T.plano && T.silColor) { o.mat = "neon"; o.matColor = hexDe(T.silColor); }
+        const hu = T.haloUrl && T.haloUrl(T.logo3d.aspect);
+        if (hu && T.plano && T.silColor) {
+          extra.push(copia(o, o.id + "-halo", (o.label || "Logo") + " (luz)", { url: hu, ext: 0, bev: 0, seg: 0, shadows: false, shCast: false, lit: false, glow: 0, mat: "matte" },
+            (k) => { const sc = k.scale; k.scale = sc * 0.95; k.position = [k.position[0], k.position[1], k.position[2] + 0.03 * sc]; }));
+        }
+        if (T.plano) {
+          const bb = T.silBox && T.silBox();
+          extra.push(copia(o, o.id + "-logo", (o.label || "Logo") + " (logo plano)", { url: T.logo, ext: 0, bev: 0, shadows: false, shCast: false, lit: false, glow: 0 },
+            (k) => { const sc = k.scale; let ks = 1, ox = 0, oy = 0; if (bb) { ks = bb.H / bb.bh; ox = (bb.W / 2 - bb.cx) / bb.bh * sc; oy = -(bb.H / 2 - bb.cy) / bb.bh * sc; } k.position = [k.position[0] + ox, k.position[1] + oy, k.position[2] + T.dzPlano * sc]; k.scale = sc * ks; }));
+        }
+      });
+      extra.forEach((n) => P.objects.push(n));
+    }
+    const NOMRE = /Planeta Ni[ñn]os/gi, LOGORE = /(planetaninos-(logo|marciano)|logo-slogan)/i;
+    const walk = (v) => {
+      if (typeof v === "string") {
+        if (v.length > 4000) return v;
+        if (T.logo && /^\.{0,2}\/?assets\//.test(v) && LOGORE.test(v)) return T.logo;
+        return nom ? v.replace(NOMRE, nom) : v;
+      }
+      if (Array.isArray(v)) { for (let i = 0; i < v.length; i++) v[i] = walk(v[i]); return v; }
+      if (v && typeof v === "object") { for (const k of Object.keys(v)) v[k] = walk(v[k]); return v; }
+      return v;
+    };
+    walk(P);
+    if (nom) P.projectName = nom + " — recorrido";
+  } catch (e) { console.warn("No se pudo adaptar el 3D base al salón:", e); }
+  return P;
+};
+const FICHA_CTX = (() => {
+  try {
+    const d = (new URLSearchParams(location.search).get("d") || "").toLowerCase();
+    if (!/^[a-z0-9][a-z0-9-]{2,29}$/.test(d)) return null;
+    let t = ""; const m = /[#&]t=([^&]+)/.exec(location.hash);
+    if (m) { t = decodeURIComponent(m[1]); try { sessionStorage.setItem("tuweeb_admin_token", t); } catch (e) {} history.replaceState(null, "", location.pathname + location.search); }
+    else { try { t = sessionStorage.getItem("tuweeb_admin_token") || ""; } catch (e) {} }
+    if (!t) { location.replace("admin/?ed=" + encodeURIComponent(d)); return null; }   // sin sesión: pide la clave en el admin y vuelve acá, así nunca queda un editor sin guardar/publicar
+    return t ? { id: d, api: "https://script.google.com/macros/s/AKfycbyTcTreVN0lQHTxzxbIEGoyF7g7UCDmAZekwLk_10tdAQSR3SbHWt-_bg1wr3ueZ9VK/exec" } : null;
+  } catch (e) { return null; }
+})();
+const AUTO_KEY = FICHA_CTX ? "weeb-autosave:" + FICHA_CTX.id : "weeb-autosave";
+const fichaLlamar = (accion, datos) => fetch(FICHA_CTX.api, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(Object.assign({ action: accion, token: sessionStorage.getItem("tuweeb_admin_token") || "", id: FICHA_CTX.id }, datos || {})) })
+  .then((r) => r.json()).then((j) => { if (j && j.sesion) throw new Error("Tu sesión del admin venció. Entrá de nuevo al admin y volvé a abrir el editor."); if (!j || !j.ok) throw new Error((j && j.mensaje) || "No se pudo."); return j.data; });
 function IBtn({ icon, kind, ...rest }) {
   return <button className={`ibtn ${kind || ""}`} {...rest}><Icon name={icon} size={16} /></button>;
 }
@@ -12668,7 +12738,6 @@ function App() {
   /* Red de seguridad: si el navegador pierde el contexto WebGL (GPU saturada) el visor se vuelve a armar solo,
      y el proyecto se guarda automático en este navegador para poder recuperarlo si la pestaña se recarga. */
   const [canvasKey, setCanvasKey] = useState(0);
-  const AUTO_KEY = "weeb-autosave";
   const [recover, setRecover] = useState(() => {
     try {
       const t = localStorage.getItem(AUTO_KEY);
@@ -13603,7 +13672,7 @@ function App() {
     if (!b64) return;
     try {
       const json = decodeURIComponent(escape(atob(b64)));
-      restoreProjectState(JSON.parse(json));
+      restoreProjectState(adaptarBaseADemo(JSON.parse(json)));
       setProjectLoaded(true);
       setTimeout(() => setProjectLoaded(false), 2500);
     } catch (e) {
@@ -13612,6 +13681,31 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  /* Desde la ficha: se abre el 3D guardado de ese salón. Si no tiene, avisa y queda el 3D base de la demo. */
+  useEffect(() => {
+    if (!FICHA_CTX) return;
+    fichaLlamar("adminP3dLeer").then((d) => {
+      if (d && d.existe && d.texto) { restoreProjectState(adaptarBaseADemo(JSON.parse(d.texto))); /* el aviso de «trabajo guardado» solo se va si es lo mismo que ya está en la ficha; si hay cambios sin guardar, queda para recuperarlos */ setRecover((r) => (r && r.text.replace(/"savedAt":"[^"]*"/, "") !== d.texto.replace(/"savedAt":"[^"]*"/, "") ? r : null)); setProjectLoaded(true); setTimeout(() => setProjectLoaded(false), 2500); showMsg("Se abrió el 3D guardado de este salón"); }
+      else showMsg("Este salón todavía no tiene su 3D guardado: es el 3D base. En su ficha podés traer el de su web o subir su .json.");
+    }).catch((e) => showMsg(e.message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const [fichaGuardando, setFichaGuardando] = useState(false);
+  const [fichaWeb, setFichaWeb] = useState(null);   // { repo, repoUrl } si ese salón ya tiene su web creada
+  const [publicando, setPublicando] = useState(false);
+  useEffect(() => {
+    if (!FICHA_CTX) return;
+    fichaLlamar("adminFichaLeer").then((d) => { if (d && d.repo) setFichaWeb({ repo: d.repo, repoUrl: d.repoUrl || "" }); }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const guardarEnFicha = () => {
+    if (fichaGuardando) return;
+    setFichaGuardando(true);
+    fichaLlamar("adminP3dGuardar", { texto: JSON.stringify(buildProjectSnapshot()) })
+      .then(() => showMsg("Guardado en la ficha del salón"))
+      .catch((e) => showMsg(e.message))
+      .then(() => setFichaGuardando(false));
+  };
   /* Guardado automático: cada 3 segundos (aunque el visor esté ocupado cargando un modelo) y también al cerrar, recargar o cambiar de pestaña.
      Antes se esperaban 2,5 s de quietud, y si se recargaba justo después de subir algo no llegaba a guardarse. */
   const snapRef = useRef(null); snapRef.current = buildProjectSnapshot;
@@ -13623,8 +13717,19 @@ function App() {
         const nuevo = JSON.stringify(snapRef.current()), actual = localStorage.getItem(AUTO_KEY);
         /* Red de seguridad: cada 5 minutos el guardado anterior pasa a «versión anterior», así un guardado malo no pisa todo el trabajo. */
         if (actual && actual !== nuevo && Date.now() - (window.__autoPrevAt || 0) > 300000) { window.__autoPrevAt = Date.now(); try { localStorage.setItem(AUTO_KEY + ":prev", actual); } catch (e) { /* sin espacio */ } }
-        localStorage.setItem(AUTO_KEY, nuevo);
-      } catch (e) { /* sin espacio: se ignora */ }
+        /* Si el navegador se quedó sin espacio (muchas demos abiertas guardan su copia), se libera lo que se puede volver a bajar y se reintenta; si igual no entra, se avisa una vez. */
+        const poner = () => localStorage.setItem(AUTO_KEY, nuevo);
+        try { poner(); } catch (e1) {
+          const limpiar = [
+            () => localStorage.removeItem(AUTO_KEY + ":prev"),
+            () => { Object.keys(localStorage).forEach((k) => { if (/^(tuweeb-demo-cfg-v1:|tuweeb-demo-v1:|planes-cfg-)/.test(k)) localStorage.removeItem(k); }); },
+            () => { Object.keys(localStorage).forEach((k) => { if (/^weeb-autosave/.test(k) && k !== AUTO_KEY) localStorage.removeItem(k); }); },
+          ];
+          let ok = false;
+          for (const l of limpiar) { try { l(); poner(); ok = true; break; } catch (e2) { /* sigue con lo siguiente */ } }
+          if (!ok && !window.__autoAviso) { window.__autoAviso = true; showMsg("No pude guardar automáticamente: el navegador no tiene espacio. Usá «Guardar en la ficha» seguido."); }
+        }
+      } catch (e) { /* se ignora */ }
     };
     const id = setInterval(guardarAuto, 3000);
     const oculto = () => { if (document.visibilityState === "hidden") guardarAuto(); };
@@ -13840,6 +13945,22 @@ function App() {
     URL.revokeObjectURL(url);
     setDownloaded(true);
     setTimeout(() => setDownloaded(false), 2000);
+  };
+
+  const publicarEnWeb = () => {
+    if (publicando || !FICHA_CTX || !fichaWeb) return;
+    if (!window.confirm("¿Publicar este 3D en la web de " + FICHA_CTX.id + " (" + fichaWeb.repo + ")?\n\nSe reemplaza lo que hoy se ve en su web. Queda un respaldo para volver atrás, y la demo no cambia.")) return;
+    setPublicando(true);
+    let index, proyecto;
+    try {
+      index = temaPostExport(buildFullHtml(boneCode, scenesCode, movementCode, scrollLengthCode, objectsCode, modelUrlCode, postFxCode, charTransformCode, trailCode, reflectionCode, loaderCode, loaderCss, extrasCode, seoPack, sectionsCode));
+      proyecto = JSON.stringify(buildProjectSnapshot());
+    } catch (e) { showMsg("No pude armar el sitio: " + e.message); setPublicando(false); return; }
+    showMsg("Publicando… puede tardar un minuto");
+    fichaLlamar("adminPublicarWeb", { index, proyecto })
+      .then((d) => showMsg("Publicado. En uno o dos minutos se ve en su web" + (d && d.url ? ": " + d.url : "")))
+      .catch((e) => showMsg(e.message))
+      .then(() => setPublicando(false));
   };
 
   const copyFullHtml = () => {
@@ -14547,6 +14668,8 @@ function App() {
             <IBtn icon="undo" title="Deshacer (Ctrl+Z)" disabled={histRef.current.idx <= 0 && histVer >= 0} onClick={() => histGo(-1)} />
             <IBtn icon="redo" title="Rehacer (Ctrl+Y)" disabled={!canRedo} onClick={() => histGo(1)} />
             <IBtn icon="file" title="Guardar proyecto (.json)" onClick={saveProject} />
+            {FICHA_CTX && <button className="ibtn acc" style={{ width: "auto", padding: "0 10px", fontSize: 12, fontWeight: 600 }} title={"Guardar este 3D en la ficha de " + FICHA_CTX.id} disabled={fichaGuardando} onClick={guardarEnFicha}>{fichaGuardando ? "Guardando…" : "Guardar en la ficha"}</button>}
+            {FICHA_CTX && fichaWeb && <button className="ibtn acc" style={{ width: "auto", padding: "0 10px", fontSize: 12, fontWeight: 600 }} title={"Publicar este 3D en la web de " + FICHA_CTX.id} disabled={publicando} onClick={publicarEnWeb}>{publicando ? "Publicando…" : "Publicar en su web"}</button>}
             <IBtn icon="export" kind="acc" title="Exportar index.html" onClick={downloadFullHtml} />
           </div>
 
