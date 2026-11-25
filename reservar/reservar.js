@@ -16,7 +16,7 @@ function h(tag, props, ...kids) {
 const S = { cfg: null, pub: null, mes: '', disp: null, fecha: '', slot: null };
 async function fetchSeguro(url, opts) { if (window.TEMA && TEMA.demoId && !TEMA.cliente) { if (!window.DEMO_BACKEND) throw new Error('No se pudo iniciar la demo. Recargá la página.'); return DEMO_BACKEND.fetch(url, opts); } const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 45000); try { return await fetch(url, { ...(opts || {}), signal: ctl.signal }); } catch (e) { throw new Error(e && e.name === 'AbortError' ? 'Está tardando demasiado. Probá de nuevo en un momento.' : 'No hay conexión. Revisá tu internet y probá de nuevo.'); } finally { clearTimeout(tm); } }
 async function llamar(action, data, post) {
-  const r = await fetchSeguro(S.cfg.api + (post ? '' : '?' + new URLSearchParams({ action, ...(data || {}) })), post ? { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, ...(data || {}) }) } : {});
+  const r = await fetchSeguro(S.cfg.api + (post ? '' : '?' + new URLSearchParams({ action, ...(S.cfg.cliente ? { cl: S.cfg.cliente } : {}), ...(data || {}) })), post ? { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, ...(S.cfg.cliente ? { cl: S.cfg.cliente } : {}), ...(data || {}) }) } : {});
   let j; try { j = await r.json(); } catch (e) { throw new Error('No hay conexión. Probá de nuevo o escribinos por WhatsApp.'); }
   if (!j.ok) { const e = new Error(j.mensaje || j.error); e.codigo = j.error; throw e; } return j.data;
 }

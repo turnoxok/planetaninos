@@ -37,8 +37,8 @@ const $app = () => $('#app');
 async function fetchSeguro(url, opts) { if (window.TEMA && TEMA.demoId && !TEMA.cliente) { if (!window.DEMO_BACKEND) throw new Error('No se pudo iniciar la demo. Recargá la página.'); return DEMO_BACKEND.fetch(url, opts); } const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 45000); try { return await fetch(url, { ...(opts || {}), signal: ctl.signal }); } catch (e) { throw new Error(e && e.name === 'AbortError' ? 'Está tardando demasiado. Probá de nuevo en un momento.' : 'No hay conexión. Revisá tu internet y probá de nuevo.'); } finally { clearTimeout(tm); } }
 async function llamar(action, data, publico) {
   const get = publico === 'get';
-  const url = S.cfg.api + (get ? '?' + new URLSearchParams({ action, ...(data || {}) }) : '');
-  const r = await fetchSeguro(url, get ? {} : { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, token: S.token, ...(data || {}) }) });
+  const url = S.cfg.api + (get ? '?' + new URLSearchParams({ action, ...(S.cfg.cliente ? { cl: S.cfg.cliente } : {}), ...(data || {}) }) : '');
+  const r = await fetchSeguro(url, get ? {} : { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, token: S.token, ...(S.cfg.cliente ? { cl: S.cfg.cliente } : {}), ...(data || {}) }) });
   let j; try { j = await r.json(); } catch (e) { throw new Error('No hay conexión con el servidor. Probá de nuevo.'); }
   if (!j.ok) { if (j.error === 'NO_AUTORIZADO' && S.token) { salir(true); } const e = new Error(j.mensaje || j.error); e.codigo = j.error; throw e; }
   return j.data;
