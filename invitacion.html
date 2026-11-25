@@ -273,8 +273,8 @@
     c.restore();
   }
   function pin(c, x, y, s) {
-    c.save(); c.translate(x, y); c.fillStyle = '#3f9a31';
-    c.beginPath(); c.arc(0, 0, 26 * s, Math.PI * .85, Math.PI * .15 + Math.PI * 2); c.lineTo(0, 44 * s); c.closePath(); c.fill();
+    c.save(); c.translate(x, y); c.fillStyle = '#8fcf1a'; c.strokeStyle = '#5f9f10'; c.lineWidth = 3 * s; c.lineJoin = 'round';
+    c.beginPath(); c.arc(0, 0, 26 * s, Math.PI * .85, Math.PI * .15 + Math.PI * 2); c.lineTo(0, 44 * s); c.closePath(); c.fill(); c.stroke();
     c.fillStyle = '#fafff9'; c.beginPath(); c.arc(0, 0, 10 * s, 0, 7); c.fill();
     c.restore();
   }
@@ -513,9 +513,9 @@
       var a4 = outCubic(prog(t, 1.5, 2.1));
       c.save(); c.globalAlpha = a4; c.translate(0, (1 - a4) * 50);
       warp(c, CX - L(137), Y(955), L(274), L(62), 12, function (c) {
-        plate(c, CX - L(137), Y(955), L(274), L(62), L(31), '#4f8a43', '#2c4f26', '#6fa062', 0);
+        plate(c, CX - L(137), Y(955), L(274), L(62), L(31), '#5cc4f0', '#2a8fc4', '#bff3fb', 0);
         c.textAlign = 'center'; c.font = '800 46px ' + F; if (c.letterSpacing !== undefined) c.letterSpacing = '7px';
-        stext(c, 'CUMPLE', CX + 4, Y(955) + L(31) + 16, '#fff', false); if (c.letterSpacing !== undefined) c.letterSpacing = '0px';
+        stext(c, 'CUMPLE', CX + 4, Y(955) + L(31) + 16, '#fff'); if (c.letterSpacing !== undefined) c.letterSpacing = '0px';
       });
       c.restore();
 
@@ -523,16 +523,16 @@
       var a5 = outCubic(prog(t, 1.8, 2.6)); c.save(); c.globalAlpha = a5; c.translate(0, (1 - a5) * 60);
       var sc5 = outBack(prog(t, 2.0, 2.8)); c.save(); c.translate(CX, 1435); c.scale(Math.max(sc5, .001), Math.max(sc5, .001));
       c.font = '800 275px ' + F; fit(c, S.edad, L(200), 275, 800, 100);
-      var ag = c.createLinearGradient(0, -195, 0, 10); ag.addColorStop(0, '#ffa466'); ag.addColorStop(1, '#f2631f');
+      var ag = c.createLinearGradient(0, -195, 0, 10); ag.addColorStop(0, '#7fd3f5'); ag.addColorStop(1, '#3bade3');
       c.save();
       /* contorno blanco por detrás (se ve solo por fuera del número: no marca las uniones internas) */
       c.lineJoin = 'round'; c.miterLimit = 2; c.lineWidth = 34; c.strokeStyle = '#fff'; c.shadowColor = 'rgba(10,40,8,.45)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = 12; c.strokeText(S.edad, 0, 6); c.shadowColor = 'transparent';
-      c.fillStyle = '#a63a0d'; for (var e = FAST ? 5 : 9; e >= 1; e--) c.fillText(S.edad, 0, e);
+      c.fillStyle = '#1d6e9c'; for (var e = FAST ? 5 : 9; e >= 1; e--) c.fillText(S.edad, 0, e);
       c.shadowColor = 'rgba(18,56,12,.55)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = FAST ? 14 : 20; c.fillText(S.edad, 0, 9); c.shadowColor = 'transparent';
       c.fillStyle = 'rgba(255,255,255,.55)'; c.fillText(S.edad, 0, -3);   /* brillo del borde de arriba (sin trazo: el trazo mostraba las uniones internas del número) */
       c.fillStyle = ag; c.fillText(S.edad, 0, 0); c.restore();
       c.restore();
-      c.font = '800 ' + Math.round(L(56)) + 'px ' + F; stext(c, +S.edad === 1 ? 'año' : 'años', CX, 1500, '#fff');
+      c.font = '800 ' + Math.round(L(56)) + 'px ' + F; var AN = +S.edad === 1 ? 'año' : 'años'; c.lineJoin = 'round'; c.lineWidth = 16; c.strokeStyle = '#fff'; c.strokeText(AN, CX, 1500); c.fillStyle = '#3bade3'; c.fillText(AN, CX, 1500);
       c.restore();
     }
 
@@ -549,12 +549,12 @@
       var lcx = CX - half / 2 + 8, lw2 = 450;
       var fs = fit(c, S.fecha, lw2, 52, 800, 30); c.fillStyle = '#23431d'; c.fillText(S.fecha, lcx, by + 82);
       var hs = 74; c.font = '800 ' + hs + 'px ' + F; var hw = c.measureText(S.hora).width + 76, hh = 104, hx = lcx - hw / 2, hy = by + 112;
-      var gg = c.createLinearGradient(0, hy, 0, hy + hh); gg.addColorStop(0, '#6ed05d'); gg.addColorStop(1, '#3f9a31');
-      c.fillStyle = gg; c.beginPath(); c.roundRect ? c.roundRect(hx, hy, hw, hh, hh / 2) : c.rect(hx, hy, hw, hh); c.fill();
-      c.fillStyle = '#fff'; c.font = '800 ' + hs + 'px ' + F; c.fillText(S.hora, lcx, hy + hh / 2 + hs * .34);
+      var gg = c.createLinearGradient(0, hy, 0, hy + hh); gg.addColorStop(0, '#c4ee45'); gg.addColorStop(.5, '#a2da1f'); gg.addColorStop(1, '#78bb14');
+      c.fillStyle = gg; c.beginPath(); c.roundRect ? c.roundRect(hx, hy, hw, hh, hh / 2) : c.rect(hx, hy, hw, hh); c.fill(); c.lineWidth = 5; c.strokeStyle = '#5f9f10'; c.stroke();
+      c.font = '800 ' + hs + 'px ' + F; c.fillStyle = 'rgba(70,120,10,.85)'; c.fillText(S.hora, lcx, hy + hh / 2 + hs * .34 + 4); c.fillStyle = '#fff'; c.fillText(S.hora, lcx, hy + hh / 2 + hs * .34);
       // derecha: pin + dónde es + dirección en hasta 2 renglones
       var rcx = CX + half / 2 + 22, rw = 360;
-      c.font = '800 34px ' + F; c.fillStyle = '#36802a'; c.fillText('¿DÓNDE ES?', rcx, by + 70);
+      c.font = '800 34px ' + F; c.fillStyle = '#78bb14'; c.fillText('¿DÓNDE ES?', rcx, by + 70);
       var l1, l2, parts = LUGAR.split(/,\s*/); l1 = parts[0]; l2 = parts.slice(1).join(', ');
       var f1 = fit(c, l1, rw, 54, 800, 34); c.fillStyle = '#23431d'; c.fillText(l1, rcx, by + 140);
       if (l2) { var f2 = fit(c, l2, rw, 46, 700, 30); c.fillStyle = '#3d6a34'; c.fillText(l2, rcx, by + 196); }
