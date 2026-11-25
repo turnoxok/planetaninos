@@ -7,7 +7,7 @@ const [out, urlSalida] = [process.argv[2], process.argv[3]];
 if (urlSalida) {
   for (const [q, nombre] of [['1', 'bk-lite'], ['2', 'bk-full']]) {
     for (const e of ['json', 'bin.gz']) fs.rmSync(path.join(out, nombre + '.' + e), {force: true});
-    const {b: br, pg} = await open(urlSalida + 'index.html?q=' + q, {w: 1400, h: 900});
+    const {b: br, pg} = await open(urlSalida + 'index-bake.html?q=' + q, {w: 1400, h: 900});
     let last = -1, est = 0;
     for (let i = 0; i < 1000; i++) {
       const s = await pg.evaluate(() => ({st: window.__wbStarted || 0, pe: window.__wbPend || 0, n: window.__SVG_GEO ? window.__SVG_GEO.size : 0})).catch(() => null);
