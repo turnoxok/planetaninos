@@ -11164,6 +11164,18 @@ function buildFullHtml(boneCode, scenesCode, movementCode, scrollLengthCode, obj
   tpl = swap(tpl, "/*@GEN:EXTRAS_START*/", "/*@GEN:EXTRAS_END*/", extrasCode);
   tpl = swap(tpl, "/*@GEN:LOADER_CSS_START*/", "/*@GEN:LOADER_CSS_END*/", loaderCss);
   tpl = swap(tpl, "/*@GEN:CHAR_TRANSFORM_START*/", "/*@GEN:CHAR_TRANSFORM_END*/", charTransformCode);
+  /* Empezar a bajar lo pesado desde el primer segundo, en paralelo con el código: librerías 3D (esm.sh) y los modelos .glb del sitio. */
+  try {
+    const im0 = tpl.indexOf('<script type="importmap">');
+    if (im0 >= 0) {
+      const im1 = tpl.indexOf("</" + "script>", im0), urls = [];
+      tpl.slice(im0, im1).replace(/"(https:\/\/esm\.sh\/[^"]+)"/g, (_, u) => { if (urls.indexOf(u) < 0) urls.push(u); return _; });
+      const glbs = [];
+      String(objectsCode || "").replace(/url:\s*"(\.\/[^"]+\.glb)"/g, (_, u) => { if (glbs.indexOf(u) < 0) glbs.push(u); return _; });
+      const pre = ['<link rel="preconnect" href="https://esm.sh" crossorigin />'].concat(urls.map((u) => '<link rel="modulepreload" crossorigin href="' + u + '" />'), glbs.map((u) => '<link rel="preload" as="fetch" crossorigin href="' + u + '" />')).join("\n");
+      tpl = tpl.slice(0, im0) + pre + "\n" + tpl.slice(im0);
+    }
+  } catch (e) { /* si falla, el sitio se exporta igual, sin precargas */ }
   if (seoPack) {
     const mk = (n) => "<" + "!--@GEN:" + n + "-->";   // (se arma por partes: un comentario HTML literal dentro de este script podría romper el HTML)
     tpl = swap(tpl, mk("SEO_HEAD_START"), mk("SEO_HEAD_END"), seoPack.head);
