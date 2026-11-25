@@ -162,7 +162,7 @@ T.aplicarObjetos=function(OBJ){if(CLIENTE||!T.logo3d||!OBJ)return;var extra=[];O
   extra.forEach(function(c){OBJ.push(c)})};
 T.dzPlano=0.05;
 function aplicar(){
-  var c=cfg||{};if(CLIENTE)c=Object.assign({},c,{logo:MARC,logo3d:MARC3D});var col=limpio(c.color),col2=limpio(c.color2);T.color=col;T.color2=col2;T.logo=logoOk(c.logo);T.logo3dRaw=logoOk(c.logo3d);T.silColor='';try{var _t=T.logo3dRaw?(/;base64/i.test(T.logo3dRaw.split(',')[0])?atob(T.logo3dRaw.split(',').slice(1).join(',')):decodeURIComponent(T.logo3dRaw.split(',').slice(1).join(','))):'',_m=/fill="(rgb\([^"]+\)|#[0-9a-fA-F]{3,8})"/.exec(_t);if(_m)T.silColor=_m[1]}catch(e){}T.logo3d=svg3d(T.logo3dRaw||T.logo);T.plano=!!(T.logo3dRaw&&T.logo3d&&/^data:image\/png/i.test(T.logo));T.nombre=c.nombre||'';
+  var c=cfg||{};if(CLIENTE)c={logo:MARC,logo3d:MARC3D};   /* sitio propio: sus colores originales, sin paleta de demo ni de la ficha */var col=limpio(c.color),col2=limpio(c.color2);T.color=col;T.color2=col2;T.logo=logoOk(c.logo);T.logo3dRaw=logoOk(c.logo3d);T.silColor='';try{var _t=T.logo3dRaw?(/;base64/i.test(T.logo3dRaw.split(',')[0])?atob(T.logo3dRaw.split(',').slice(1).join(',')):decodeURIComponent(T.logo3dRaw.split(',').slice(1).join(','))):'',_m=/fill="(rgb\([^"]+\)|#[0-9a-fA-F]{3,8})"/.exec(_t);if(_m)T.silColor=_m[1]}catch(e){}T.logo3d=svg3d(T.logo3dRaw||T.logo);T.plano=!!(T.logo3dRaw&&T.logo3d&&/^data:image\/png/i.test(T.logo));T.nombre=c.nombre||'';
   if(col&&col2&&toHsl(col)[1]<.12&&toHsl(col2)[1]>=.12){var tmp=col;col=col2;col2=tmp;T.color=col;T.color2=col2}
   if(!col){T.delta=0;return}
   var ref=toHsl(REF),refA=toHsl('b1c74d'),b=toHsl(col),b2=col2?toHsl(col2):b,gris=b[1]<.12,
