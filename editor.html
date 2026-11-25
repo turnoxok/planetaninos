@@ -10301,6 +10301,8 @@ function generateObjectsCode(objects, transformsByKf, stages, easings) {
   const fmtNum = (n) => (Math.abs(n) < 0.0001 ? 0 : Math.round(n * 1000) / 1000);
   const fmtVec = (v) => `[${v.map(fmtNum).join(", ")}]`;
   const esc = (s) => JSON.stringify(s == null ? "" : s);
+  /* Piezas del propio sitio (assets/models) apuntadas con la dirección completa para verlas en el editor: al exportar vuelven a ser relativas, así el sitio usa sus piezas pre-armadas y no depende del dominio. */
+  const urlPropia = (u) => String(u == null ? "" : u).replace(/^https:\/\/[a-z0-9.-]+\/(assets\/models\/)/i, "./$1");
   const objLines = objects.map((o) => {
     const transforms = transformsByKf[o.id] || {};
     const kfLines = stages.map((kf, idx) => {
@@ -10464,7 +10466,7 @@ ${kfLines}
     }
     return `  {
     type: "${o.type === "image" || o.type === "video" ? o.type : "model"}",
-    url: "${o.url}",
+    url: "${urlPropia(o.url)}",
     rig: ${o.rig && o.type === "model" ? "true" : "false"},
     videoMode: "${o.type === "video" && o.videoMode === "play" ? "play" : "scroll"}",
     scrollFrom: ${fmtNum((o.scrubFrom ?? 0) / 100)},
@@ -10561,7 +10563,7 @@ function generateSeoPack(seoIn, dockIn, objects, sections, menuIn, fabIn) {
   }
   if (s.themeColor) head.push('<meta name="theme-color" content="' + seoEsc(s.themeColor) + '" />');
   /* Si el sitio enlaza a planes o a reservas, los datos de planes se piden en segundo plano cuando el 3D ya cargó: la página de planes abre ya lista. */
-  if (/\.\/(planes\.html|reservar\/)/.test(JSON.stringify([(menuIn && menuIn.items) || [], fabIn && fabIn.enabled ? fabIn.reservarUrl : ""]))) { head.push('<script src="./tema.js?v=42"></' + 'script>'); head.push("<" + "script>(function(){function go(){fetch('./reservar/config.json').then(function(r){return r.json()}).then(function(c){return fetch(c.api+'?action=config')}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.data&&j.data.planes)localStorage.setItem('planes-cfg-v3',JSON.stringify(j.data))}).catch(function(){})}addEventListener('load',function(){(window.requestIdleCallback||function(f){setTimeout(f,3000)})(go,{timeout:8000})})})();" + "</" + "script>"); }
+  if (/\.\/(planes\.html|reservar\/)/.test(JSON.stringify([(menuIn && menuIn.items) || [], fabIn && fabIn.enabled ? fabIn.reservarUrl : ""]))) { head.push('<script src="./tema.js?v=42"></' + 'script>'); head.push("<" + "script>(function(){function go(){fetch('./reservar/config.json').then(function(r){return r.json()}).then(function(c){return fetch(c.api+'?action=config'+(c.cliente?'&cl='+encodeURIComponent(c.cliente):''))}).then(function(r){return r.json()}).then(function(j){if(j&&j.ok&&j.data&&j.data.planes)localStorage.setItem('planes-cfg-v3',JSON.stringify(j.data))}).catch(function(){})}addEventListener('load',function(){(window.requestIdleCallback||function(f){setTimeout(f,3000)})(go,{timeout:8000})})})();" + "</" + "script>"); }
   head.push('<meta property="og:type" content="website" />');
   head.push('<meta property="og:locale" content="' + seoEsc(String(s.lang || "es").replace("-", "_")) + '" />');
   if (title) head.push('<meta property="og:title" content="' + seoEsc(title) + '" />');
