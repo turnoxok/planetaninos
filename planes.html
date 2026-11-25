@@ -14,13 +14,13 @@
 <meta property="og:title" content="Planes y precios de cumpleaños — Planeta Niños" />
 <meta property="og:description" content="Planes de cumpleaños en Planeta Niños (Oro Verde, Entre Ríos): Despegue y Despegue Plus, con lunes a jueves y fin de semana. Mirá precios y reservá online." />
 <meta property="og:url" content="https://turnoxok.github.io/planetaninos/planes.html" />
-<meta property="og:image" content="https://turnoxok.github.io/planetaninos/assets/og-planetaninos.jpg" />
+<meta property="og:image" content="https://turnoxok.github.io/planetaninos/assets/og-planetaninos.jpg?v=2" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Planes y precios de cumpleaños — Planeta Niños" />
 <meta name="twitter:description" content="Planes de cumpleaños en Planeta Niños (Oro Verde, Entre Ríos): Despegue y Despegue Plus, con lunes a jueves y fin de semana. Mirá precios y reservá online." />
-<meta name="twitter:image" content="https://turnoxok.github.io/planetaninos/assets/og-planetaninos.jpg" />
+<meta name="twitter:image" content="https://turnoxok.github.io/planetaninos/assets/og-planetaninos.jpg?v=2" />
 <link rel="icon" type="image/png" href="./assets/models/favicon.png" />
 <link rel="apple-touch-icon" href="./assets/models/apple-touch-icon.png" />
 <meta name="theme-color" content="#406c38" />
@@ -461,12 +461,12 @@ function armar(c){
        inc:['Salón climatizado','Galería semicubierta y parque','Cocina equipada','Servicio de 2 mozos','Limpieza del espacio y emergencias médicas','Mesa principal','Candy bar y fondo decorativo','Vajilla de vidrio para 50 adultos','Vajilla plástica para 10 niños','Juegos básicos del predio para los niños (sin inflables ni pelotero)']}];
     box.innerHTML=BAU.map(function(b,i){
       var msg='Hola! Quiero consultar fecha para un bautismo ('+b.nombre.toLowerCase()+')';
-      var go=tel?'https://wa.me/'+tel+'?text='+encodeURIComponent(msg):'./reservar/';
+      var go='./reservar/';
       return '<article class="plan '+b.k+'" style="--d:'+(i*130)+'ms"><div class="ph"><h2>'+esc(b.nombre)+'</h2><p>'+esc(b.tag)+'</p><img class="rk" src="'+ROCK+'" alt=""></div>'+
         '<div class="meta">'+b.chips.map(function(x){return '<b>'+esc(x)+'</b>'}).join('')+'</div>'+
         '<ul class="inc">'+b.inc.map(function(x,n){return '<li style="--k:'+n+'">'+esc(x)+'</li>'}).join('')+'</ul>'+
         '<div class="bands"><div class="band"><h4>'+esc(b.fechas)+'</h4><div class="hrs">Horario: de 12 a 16 hs</div><div class="pr"><strong>'+money(b.precio)+'</strong><em>valor del festejo</em></div></div></div>'+
-        '<p class="sena">Reservá la fecha con una seña de '+money(b.sena)+'.</p><a class="go" href="'+go+'"'+(tel?' target="_blank" rel="noopener"':'')+'>Consultar fecha</a></article>'}).join('');
+        '<p class="sena">Reservá la fecha con una seña de '+money(b.sena)+'.</p><a class="go" href="'+go+'">Reservar fecha</a></article>'}).join('');
     $('bauNota').textContent='Valores de diciembre, enero y febrero. Se ajustan según la cantidad de invitados.';
     sec.hidden=false})();
   (function(){var el=document.querySelectorAll('#planes .plan,#bautismos .plan');if(!('IntersectionObserver' in window)){el.forEach(function(e){e.classList.add('in')});return}
