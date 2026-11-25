@@ -35,7 +35,7 @@
   button:hover{transform:translateY(-2px);filter:brightness(1.07)}
   .dl-row{margin-top:12px}
   button.wa{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:#fff;border-color:#fff;color:var(--t-1e3a19,#1e3a19);box-shadow:0 12px 24px -12px rgba(0,0,0,.45)}
-  button.wa svg{width:22px;height:22px;fill:var(--t-25a244,#25a244);flex:none}
+  button.wa svg{width:24px;height:24px;fill:#25d366;flex:none}
   button.wa.listo{background:var(--t-b1c74d,#b1c74d);border-color:var(--t-b1c74d,#b1c74d)}
   button.sec{background:rgba(235,235,239,.08);border-color:var(--off);color:var(--off);box-shadow:none}
   button:disabled{opacity:.55;cursor:wait;transform:none}
@@ -142,7 +142,7 @@
     var P = CanvasRenderingContext2D.prototype, cache = {}, ck = '';
     function h2(n) { n = Math.max(0, Math.min(255, +n)); return (n < 16 ? '0' : '') + n.toString(16); }
     function map(v) {
-      var T = window.TEMA; if (window.__rawFill || typeof v !== 'string' || !T || !T.hexEscena || !T.color) return v;
+      var T = window.TEMA; if (window.__rawFill || typeof v !== 'string' || !T || T.cliente || !T.hexEscena || !T.color) return v;   /* el sitio propio (Planeta Niños) usa sus colores tal cual */
       var k = T.color + T.color2 + (T.color3 || '') + (T.color4 || ''); if (k !== ck) { cache = {}; ck = k; }
       if (v in cache) return cache[v];
       var r = v, m;
@@ -176,7 +176,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var FONDO = new Image(); FONDO.onload = function () { rerender(); }; FONDO.src = './assets/inv/fondo-pn.jpg';   /* fondo fijo de la invitación */
   var SHEEP = new Image(); SHEEP.src = (window.TEMA && TEMA.logo) || './assets/models/planetaninos-logo.png'; SHEEP.onload = rerender;   // el marciano: solo como relleno cuando no hay foto
-  var LOGO = new Image(); LOGO.src = (window.TEMA && TEMA.logo) || './assets/models/logo-slogan.svg'; LOGO.onload = function () { STK = null; rerender(); };   // el nombre, sin marciano
+  var LOGO = new Image(); LOGO.src = (window.TEMA && !TEMA.cliente && TEMA.logo) || './assets/models/logo-slogan.svg'; LOGO.onload = function () { STK = null; rerender(); };   // el nombre, sin marciano
   var photo = null, FAST = false, PHV = 0;
   function sig() { return JSON.stringify(state()) + '|' + PHV; }
   var DEFOTO = new Image(); DEFOTO.onload = function () { if (!photo) { photo = DEFOTO; PHV++; rerender(); } }; DEFOTO.src = './assets/inv/foto.jpg';
@@ -369,8 +369,8 @@
     var a = document.createElement('canvas'); a.width = w; a.height = h; var x = a.getContext('2d');
     x.drawImage(LOGO, pad, pad, lw, lh);
     /* logo claro: la silueta que lo rodea va en el color oscuro de la marca para que no se pierda sobre el fondo */
-    var claro = false; try { var im = x.getImageData(0, 0, w, h).data, sl = 0, sn = 0; for (var q = 0; q < im.length; q += 16) { if (im[q + 3] > 200) { sl += im[q] * .299 + im[q + 1] * .587 + im[q + 2] * .114; sn++; } } claro = sn > 20 && sl / sn > 190; } catch (e) {}
-    x.globalCompositeOperation = 'source-in'; window.__rawFill = true; x.fillStyle = (window.TEMA && TEMA.silColor) ? TEMA.silColor : claro ? (window.TEMA && TEMA.color ? '#' + TEMA.color : '#23431d') : '#fff'; x.fillRect(0, 0, w, h); window.__rawFill = false;
+    var claro = false; try { var im = x.getImageData(0, 0, w, h).data, sl = 0, sn = 0; for (var q = 0; q < im.length; q += 16) { if (im[q + 3] > 200) { sl += im[q] * .299 + im[q + 1] * .587 + im[q + 2] * .114; sn++; } } claro = sn > 20 && sl / sn > 190 && !(window.TEMA && TEMA.cliente); } catch (e) {}
+    x.globalCompositeOperation = 'source-in'; window.__rawFill = true; x.fillStyle = (window.TEMA && TEMA.silColor && !TEMA.cliente) ? TEMA.silColor : claro ? (window.TEMA && TEMA.color ? '#' + TEMA.color : '#23431d') : '#fff'; x.fillRect(0, 0, w, h); window.__rawFill = false;
     var b = document.createElement('canvas'); b.width = w; b.height = h; var y = b.getContext('2d');
     [r, r * .66, r * .33].forEach(function (rad) { for (var k = 0; k < 32; k++) { var an = k / 32 * Math.PI * 2; y.drawImage(a, Math.cos(an) * rad, Math.sin(an) * rad); } });
     y.drawImage(a, 0, 0); b.k = lw; b.pad = pad; STK = b; return b;
@@ -465,7 +465,7 @@
     var lw = L(720), lh = lw * .2;
     if (LOGO.complete && LOGO.naturalWidth) {
       /* el logo entra en una caja propia (arriba del cartel): nunca tapa ni queda tapado por "ESTÁS INVITADO" y la foto */
-      var ar = LOGO.naturalWidth / LOGO.naturalHeight, mh = Y(190); lw = Math.min(L(720), mh * ar); lh = lw / ar; lw = Math.round(lw); lh = Math.round(lh);
+      var ar = LOGO.naturalWidth / LOGO.naturalHeight, mh = Y(190); lw = Math.min(ar > 3 ? L(740) : L(720), mh * (ar > 3 ? 1.6 : 1) * ar); lh = lw / ar; lw = Math.round(lw); lh = Math.round(lh);
       var ly = Y(185) - lh / 2, st = sticker(lw, lh), pd = st.pad; c.shadowColor = 'rgba(10,40,8,.45)'; c.shadowBlur = FAST ? 0 : 22; c.shadowOffsetY = 12; c.drawImage(st, CX - lw / 2 - pd, ly - pd); c.shadowColor = 'transparent'; c.drawImage(LOGO, CX - lw / 2, ly, lw, lh);
     }
     c.restore();
@@ -844,7 +844,7 @@
   units(); rerender();
   /* cuando llega la marca de la demo: datos del lugar, logo y colores nuevos, y se vuelve a dibujar */
   if (window.TEMA && TEMA.listo) TEMA.listo.then(function () {
-    datosLugar(); var u = TEMA.logo; if (u) { if (LOGO.getAttribute('src') !== u) LOGO.src = u; if (SHEEP.getAttribute('src') !== u) SHEEP.src = u; }
+    datosLugar(); var u = TEMA.logo; if (u) { if (!TEMA.cliente && LOGO.getAttribute('src') !== u) LOGO.src = u; if (SHEEP.getAttribute('src') !== u) SHEEP.src = u; }
     var bc = (TEMA.silColor || (TEMA.color ? '#' + TEMA.color : ''));
     if (bc && TEMA.demo) document.querySelectorAll('button.wa svg').forEach(function (v) { v.style.fill = bc; });
     fondoDemo(); STK = null; rerender();
