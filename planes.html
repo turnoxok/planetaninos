@@ -143,6 +143,13 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   .plan{--bg:#eaf6ff;--bd:#4bb4f5;--c0:#cfe9fb;--c1:#2f9be8;--c2:#0b4f8f;--hd:linear-gradient(135deg,#2f9be8,#5cc0fa);--hx:#fff;position:relative;opacity:0;transform:translateY(30px) scale(.98);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1),box-shadow .3s;background:var(--bg);color:var(--c2);border:5px solid var(--bd);border-radius:26px;padding:0 20px 22px;overflow:visible}
   .plan.k-plus{--bg:#f7f3ff;--bd:#9a6bf0;--c0:#e6dcfb;--c1:#7b43d6;--c2:#3f1f86;--hd:linear-gradient(135deg,#6a35c9,#9a6bf0)}
   .plan.k-promo{--bg:#fff7dd;--bd:#d9a21b;--c0:#fbe8ae;--c1:#c48a00;--c2:#5c3d00;--hd:#e0a91b;--hx:#3d2800}
+  /* Bautismos: colores pastel (celeste y rosa). El cohete es provisorio: se cambia por el angelito cuando llegue la imagen (assets/planes/angelito.webp). */
+  .plan.k-bau{--bg:#f2f9fe;--bd:#a9d8f5;--c0:#dcefFB;--c1:#5fa8d6;--c2:#2e5a78;--hd:linear-gradient(135deg,#bfe3fa,#e3f3fd);--hx:#2e5a78}
+  .plan.k-bau2{--bg:#fff5f9;--bd:#f6c3d7;--c0:#fbe1ec;--c1:#d97aa0;--c2:#7a3a57;--hd:linear-gradient(135deg,#f9cfe0,#fde9f1);--hx:#7a3a57}
+  .plans.dos{grid-template-columns:repeat(2,1fr);max-width:860px;margin-left:auto;margin-right:auto}
+  .plan.k-bau .ph h2,.plan.k-bau2 .ph h2{max-width:62%}
+  .plan.k-bau .ph p,.plan.k-bau2 .ph p{opacity:.9}
+  .bau-nota{margin:16px auto 0;max-width:860px;font-size:.85rem;line-height:1.5;opacity:.8;text-align:center}
   .plan.in{opacity:1;transform:none;transition-delay:var(--d,0ms)}
   .plan.in:hover{transform:translateY(-6px);transition-delay:0ms;box-shadow:0 30px 60px -26px rgba(5,18,3,.9)}
   .plan.top{background:var(--bg);border-color:var(--bd);box-shadow:0 0 0 4px rgba(75,180,245,.3)}
@@ -259,7 +266,7 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   .cta a.sec{background:transparent;border-color:var(--off);color:var(--off)}
   .note{font-size:.8rem;opacity:.65;line-height:1.5;margin-top:22px;text-align:center}
   @media (max-width:900px){
-    .plans{grid-template-columns:1fr;gap:26px}
+    .plans,.plans.dos{grid-template-columns:1fr;gap:26px}
     .cta{flex-direction:column;align-items:stretch;text-align:center}
     .cta .btns{flex-direction:column}
     .cta a{text-align:center}
@@ -296,6 +303,13 @@ window.__planes={clave:clave,cache:c,foto:T.listo.then(function(){return T.demo&
   </section>
 
   <section class="blk" id="promoSec" hidden></section>
+  <section class="blk" id="bautismoSec" aria-labelledby="bauTit" hidden>
+    <h2 id="bauTit">Bautismos</h2>
+    <p class="sub">Un festejo cómodo para compartir en familia, entre grandes y chicos, sin preocuparse por la organización.</p>
+    <div class="plans dos" id="bautismos"></div>
+    <p class="bau-nota" id="bauNota"></p>
+  </section>
+
 
   <section class="blk" id="detalleSec" aria-labelledby="pgIncluyeTitulo" hidden>
     <h2 id="pgIncluyeTitulo"></h2>
@@ -436,7 +450,26 @@ function armar(c){
       body='<ul class="inc">'+rest.map(function(x,k){return '<li style="--k:'+k+'">'+esc(x)+'</li>'}).join('')+'</ul>';
     }
     return '<article class="plan '+kind+(top?' top':'')+'" style="--d:'+(i*130)+'ms">'+(top&&c.pgDestacado?'<span class="badge">'+esc(c.pgDestacado)+'</span>':'')+head+(chips&&kind!=='k-promo'?'<div class="meta">'+chips+'</div>':'')+body+'<div class="bands">'+bands+'</div><p class="sena">'+cuota(p)+'</p><a class="go" href="./reservar/">'+esc(c.pgBotonPlan||'Reservar este combo')+'</a></article>'}).join('');
-  (function(){var el=document.querySelectorAll('#planes .plan');if(!('IntersectionObserver' in window)){el.forEach(function(e){e.classList.add('in')});return}
+  /* Bautismos (datos que pasó el salón). Se consultan por WhatsApp porque las fechas son pocas y se arreglan una por una. */
+  (function(){var tel=String(c.whatsapp||'').replace(/\D/g,''),sec=$('bautismoSec'),box=$('bautismos');if(!sec||!box)return;
+    var BAU=[
+      {k:'k-bau',nombre:'Bautismo para 40',tag:'Hasta 40 invitados',chips:['30 adultos','10 niños','12 a 16 hs'],precio:290000,sena:150000,
+       fechas:'Domingos 6 y 20 de diciembre',
+       inc:['Salón climatizado','Parque y galería semicubierta','Juegos básicos del predio para los niños (sin inflables ni pelotero)','Mobiliario y vajilla para todos los invitados','Vajilla de vidrio para adultos y plástica para niños','Servicio de 1 mozo','Coordinación y acompañamiento durante el evento','Limpieza y emergencias médicas']},
+      {k:'k-bau2',nombre:'Bautismo para 60',tag:'Hasta 60 invitados',chips:['50 adultos','10 niños','4 horas'],precio:390000,sena:150000,
+       fechas:'Domingos · consultá las fechas libres',
+       inc:['Salón climatizado','Galería semicubierta y parque','Cocina equipada','Servicio de 2 mozos','Limpieza del espacio y emergencias médicas','Mesa principal','Candy bar y fondo decorativo','Vajilla de vidrio para 50 adultos','Vajilla plástica para 10 niños','Juegos básicos del predio para los niños (sin inflables ni pelotero)']}];
+    box.innerHTML=BAU.map(function(b,i){
+      var msg='Hola! Quiero consultar fecha para un bautismo ('+b.nombre.toLowerCase()+')';
+      var go=tel?'https://wa.me/'+tel+'?text='+encodeURIComponent(msg):'./reservar/';
+      return '<article class="plan '+b.k+'" style="--d:'+(i*130)+'ms"><div class="ph"><h2>'+esc(b.nombre)+'</h2><p>'+esc(b.tag)+'</p><img class="rk" src="'+ROCK+'" alt=""></div>'+
+        '<div class="meta">'+b.chips.map(function(x){return '<b>'+esc(x)+'</b>'}).join('')+'</div>'+
+        '<ul class="inc">'+b.inc.map(function(x,n){return '<li style="--k:'+n+'">'+esc(x)+'</li>'}).join('')+'</ul>'+
+        '<div class="bands"><div class="band"><h4>'+esc(b.fechas)+'</h4><div class="hrs">Horario: de 12 a 16 hs</div><div class="pr"><strong>'+money(b.precio)+'</strong><em>valor del festejo</em></div></div></div>'+
+        '<p class="sena">Reservá la fecha con una seña de '+money(b.sena)+'.</p><a class="go" href="'+go+'"'+(tel?' target="_blank" rel="noopener"':'')+'>Consultar fecha</a></article>'}).join('');
+    $('bauNota').textContent='Valores de diciembre, enero y febrero. Se ajustan según la cantidad de invitados.';
+    sec.hidden=false})();
+  (function(){var el=document.querySelectorAll('#planes .plan,#bautismos .plan');if(!('IntersectionObserver' in window)){el.forEach(function(e){e.classList.add('in')});return}
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});el.forEach(function(e){io.observe(e)})})();
   (function(){var np=planes.filter(function(p){return !/promo/i.test(p.nombre)}),u=$('upgrade'),sec=u.closest('section');
     if(np.length<2){sec.hidden=true;return}
